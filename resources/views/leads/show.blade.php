@@ -134,6 +134,22 @@
                     Client PO
                 </a>
 
+                @can('raise-invoice-bu')
+                <a href="{{ route('invoices.create', ['lead_id' => $lead->id]) }}" 
+                class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Raise Invoice BU
+                </a>
+                @endcan
+
+                @can('raise-invoice-or')
+                <a href="{{ route('or-invoices.create', ['lead_id' => $lead->id]) }}" 
+                class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-lg font-medium hover:bg-indigo-100 transition-colors shadow-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Invoice OR
+                </a>
+                @endcan
+
                 @if($lead->creation_source === 'CLIENT REGISTRATION')
                     @if($lead->is_agreement_sent)
                         <span class="bg-indigo-100 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-lg font-bold shadow-sm flex items-center gap-2">

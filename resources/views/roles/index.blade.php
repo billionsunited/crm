@@ -113,6 +113,10 @@
                                             Enquiry {{ str_replace('campaign-', '', $permission->name) }}
                                         @elseif($permission->name === 'email-template-send')
                                             Send Email Marketing
+                                        @elseif($permission->name === 'raise-invoice-bu')
+                                            Raise Invoice BU
+                                        @elseif($permission->name === 'raise-invoice-or')
+                                            Raise Invoice OR
                                         @elseif(str_starts_with($permission->name, 'email-template-'))
                                             Email Template {{ str_replace('email-template-', '', $permission->name) }}
                                         @else

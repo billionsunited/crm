@@ -36,6 +36,8 @@ class PermissionSeeder extends Seeder
             'invoice-export',
             'invoice-or-section',
             'invoice-or-export',
+            'raise-invoice-bu',
+            'raise-invoice-or',
             'vendor-section',
             'campaign-send',
             'document-section',

@@ -384,7 +384,12 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('invoiceForm', () => ({
                 taxType: 'local',
-                selectedLeadId: '',
+                selectedLeadId: '{{ request()->get('lead_id', '') }}',
+                init() {
+                    if (this.selectedLeadId) {
+                        this.handleLeadChange();
+                    }
+                },
                 serviceRates: {
                     "Marketing Services": 3000,
                     "SMS Campaign": 1500,

@@ -64,7 +64,7 @@
                     $groupedPermissions = [
                         'Dashboard' => ['dashboard-access'],
                         'Lead Management' => ['lead-view', 'lead-edit', 'lead-add', 'lead-delete', 'lead-import', 'lead-export', 'lead-send-document', 'whatsapp-icon', 'lead-contact-view'],
-                        'Financials & Invoices' => ['invoice-section', 'invoice-export', 'invoice-or-section', 'invoice-or-export', 'email-section'],
+                        'Financials & Invoices' => ['invoice-section', 'invoice-export', 'invoice-or-section', 'invoice-or-export', 'raise-invoice-bu', 'raise-invoice-or', 'email-section'],
                         'Vendors & Partners' => ['vendor-section'],
                         'Marketing' => ['campaign-send'],
                         'Enquiry Campaign' => ['campaign-view', 'campaign-add', 'campaign-edit', 'campaign-delete', 'campaign-import', 'campaign-export', 'enquiry-vendor-contact-view'],
@@ -111,6 +111,10 @@
                                     OR Invoice Module
                                 @elseif($perm === 'invoice-or-export')
                                     OR Invoice Export
+                                @elseif($perm === 'raise-invoice-bu')
+                                    Raise Invoice BU
+                                @elseif($perm === 'raise-invoice-or')
+                                    Raise Invoice OR
                                 @elseif($perm === 'lead-contact-view')
                                     View Lead Contacts
                                 @elseif($perm === 'enquiry-vendor-contact-view')

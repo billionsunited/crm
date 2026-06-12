@@ -382,7 +382,12 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('invoiceForm', () => ({
                 taxType: 'local',
-                selectedLeadId: '',
+                selectedLeadId: '{{ request()->get('lead_id', '') }}',
+                init() {
+                    if (this.selectedLeadId) {
+                        this.handleLeadChange();
+                    }
+                },
                 serviceRates: {
                     "Base Metal": 3000,
                     "Imitation Jewelry": 1500,
