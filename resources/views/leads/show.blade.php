@@ -127,13 +127,6 @@
             </a>
             @endcan
 
-            @if($lead->isClient() && auth()->user()->can('client-po-access'))
-                <a href="{{ route('manage_po.client_po.create', ['lead_id' => $lead->id, 'customer_id' => $lead->customer_id]) }}" 
-                class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors shadow-sm flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                    Client PO
-                </a>
-
                 @can('raise-invoice-bu')
                 <a href="{{ route('invoices.create', ['lead_id' => $lead->id]) }}" 
                 class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-2">
@@ -149,6 +142,13 @@
                     Invoice OR
                 </a>
                 @endcan
+
+            @if($lead->isClient() && auth()->user()->can('client-po-access'))
+                <a href="{{ route('manage_po.client_po.create', ['lead_id' => $lead->id, 'customer_id' => $lead->customer_id]) }}" 
+                class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors shadow-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    Client PO
+                </a>
 
                 @if($lead->creation_source === 'CLIENT REGISTRATION')
                     @if($lead->is_agreement_sent)
