@@ -3,6 +3,39 @@
 @section('header', 'Office Timings')
 
 @section('content')
+<style>
+/* Custom toggle styles to ensure they work without running npm run build on production */
+.custom-toggle {
+    width: 44px;
+    height: 24px;
+    background-color: #e2e8f0;
+    border-radius: 9999px;
+    position: relative;
+    transition: background-color 0.2s;
+}
+.working-day-toggle:checked + .custom-toggle {
+    background-color: #4f46e5;
+}
+.custom-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+.working-day-toggle:checked + .custom-toggle::after {
+    transform: translateX(20px);
+    border-color: white;
+}
+.working-day-toggle:focus + .custom-toggle {
+    box-shadow: 0 0 0 4px rgba(165, 180, 252, 0.5);
+}
+</style>
 <div class="mb-6">
     <div class="flex items-center gap-3">
         <h2 class="text-2xl font-bold text-slate-800">Office Timings</h2>
@@ -33,8 +66,8 @@
                             </td>
                             <td class="py-4 px-4">
                                 <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="timings[{{ $index }}][is_working_day]" value="1" class="sr-only peer working-day-toggle" data-index="{{ $index }}" {{ $timing->is_working_day ? 'checked' : '' }}>
-                                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                    <input type="checkbox" name="timings[{{ $index }}][is_working_day]" value="1" class="sr-only working-day-toggle" data-index="{{ $index }}" {{ $timing->is_working_day ? 'checked' : '' }}>
+                                    <div class="custom-toggle"></div>
                                 </label>
                             </td>
                             <td class="py-4 px-4">
