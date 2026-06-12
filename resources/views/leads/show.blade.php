@@ -20,44 +20,112 @@
                 <span class="text-sm text-slate-500">Created {{ $lead->created_at->format('M d, Y') }}</span>
             </div>
         </div>
-        <div class="flex flex-wrap items-center md:justify-end gap-2 md:gap-3" x-data="{ showUploadModal: false }">
-            @if(auth()->user()->isAdmin() || auth()->user()->can('campaign-send'))
-            <button type="button"
-                @click="$dispatch('open-messaging-modal', { type: 'whatsapp', leadId: '{{ $lead->id }}', leadName: '{{ addslashes($lead->customer_name) }}', leadMobile: '{{ $lead->mobile }}' })"
-                class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-lg font-medium hover:bg-indigo-100 transition-colors shadow-sm flex items-center gap-2"
-                title="Mobile Marketing">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z">
-                    </path>
-                </svg>
-                Mobile Marketing
-            </button>
+        <div class="flex flex-wrap items-center md:justify-end gap-2 md:gap-3" x-data="{ showUploadModal: false, openActions: false }">
+            @if($lead->isVendor())
+                <a href="{{ route('vendor_leads.kyc', ['page' => request('page')]) }}" class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors shadow-sm">
+                    Back to Vendor KYC
+                </a>
+            @else
+                <a href="{{ route('leads.index', ['page' => request('page')]) }}" class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors shadow-sm">
+                    Back to Leads
+                </a>
             @endif
 
-            @can('email-template-send')
-            <button type="button"
-                @click="$dispatch('open-email-modal', { 
-                    bulkIds: ['{{ $lead->id }}'],
-                    emailCampaignRoute: '{{ route("leads.send_email_campaign") }}',
-                    isFilteredCampaign: false,
-                    filters: {}
-                })"
-                class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-lg font-medium hover:bg-indigo-100 transition-colors shadow-sm flex items-center gap-2"
-                title="Send Email Marketing">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                Send Email Marketing
-            </button>
+            @can('lead-edit')
+            <a href="{{ route('leads.edit', [$lead->id, 'page' => request('page')]) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm">
+                Edit Lead
+            </a>
             @endcan
 
-            @if(auth()->user()->isAdmin() || auth()->user()->can('lead-send-document'))
-            <button @click="showUploadModal = true" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-lg font-medium hover:bg-indigo-100 transition-colors shadow-sm flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                Send Document
-            </button>
-            @endif
+            <div class="relative">
+                <button @click="openActions = !openActions" @click.away="openActions = false" type="button" 
+                    class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-2">
+                    <span>Actions</span>
+                    <svg class="w-4 h-4 transition-transform" :class="{'rotate-180': openActions}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                
+                <div x-show="openActions" x-transition style="display: none;" 
+                    class="absolute left-0 sm:left-auto sm:right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 z-50 overflow-hidden py-2">
+                    
+                    @if(auth()->user()->isAdmin() || auth()->user()->can('campaign-send'))
+                    <button type="button" @click="$dispatch('open-messaging-modal', { type: 'whatsapp', leadId: '{{ $lead->id }}', leadName: '{{ addslashes($lead->customer_name) }}', leadMobile: '{{ $lead->mobile }}' }); openActions = false;" 
+                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors text-left font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                        Mobile Marketing
+                    </button>
+                    @endif
+
+                    @can('email-template-send')
+                    <button type="button" @click="$dispatch('open-email-modal', { bulkIds: ['{{ $lead->id }}'], emailCampaignRoute: '{{ route("leads.send_email_campaign") }}', isFilteredCampaign: false, filters: {} }); openActions = false;" 
+                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors text-left font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        Send Email Marketing
+                    </button>
+                    @endcan
+
+                    @if(auth()->user()->isAdmin() || auth()->user()->can('lead-send-document'))
+                    <button @click="showUploadModal = true; openActions = false;" type="button"
+                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors text-left font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        Send Document
+                    </button>
+                    @endif
+
+                    @if($lead->creation_source === 'CLIENT REGISTRATION')
+                        <div class="my-1 border-t border-slate-100"></div>
+                        @if($lead->is_agreement_sent)
+                            <div class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-indigo-700 bg-indigo-50/50 font-bold text-left">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                Agreement Sent
+                            </div>
+                        @else
+                            <form action="{{ route('leads.send_agreement', $lead->id) }}" method="POST" class="w-full m-0">
+                                @csrf
+                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors text-left font-medium">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                    Send Agreement
+                                </button>
+                            </form>
+                        @endif
+                    @endif
+
+                    @if((auth()->user()->can('raise-invoice-bu') || auth()->user()->can('raise-invoice-or') || ($lead->isClient() && auth()->user()->can('client-po-access')) || ($lead->isVendor() && auth()->user()->can('vendor-po-access'))))
+                        <div class="my-1 border-t border-slate-100"></div>
+                    @endif
+
+                    @can('raise-invoice-bu')
+                    <a href="{{ route('invoices.create', ['lead_id' => $lead->id]) }}" 
+                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors text-left font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Raise Invoice BU
+                    </a>
+                    @endcan
+
+                    @can('raise-invoice-or')
+                    <a href="{{ route('or-invoices.create', ['lead_id' => $lead->id]) }}" 
+                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors text-left font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Invoice OR
+                    </a>
+                    @endcan
+
+                    @if($lead->isClient() && auth()->user()->can('client-po-access'))
+                    <a href="{{ route('manage_po.client_po.create', ['lead_id' => $lead->id, 'customer_id' => $lead->customer_id]) }}" 
+                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-emerald-600 transition-colors text-left font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        Client PO
+                    </a>
+                    @endif
+
+                    @if($lead->isVendor() && auth()->user()->can('vendor-po-access'))
+                    <a href="{{ route('manage_po.vendor_po', ['lead_id' => $lead->id]) }}" 
+                        class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-emerald-600 transition-colors text-left font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        Vendor PO
+                    </a>
+                    @endif
+                </div>
+            </div>
 
             <!-- Upload Modal -->
             <div x-show="showUploadModal" 
@@ -111,68 +179,6 @@
                     </div>
                 </div>
             </div>
-
-            @if($lead->isVendor())
-                <a href="{{ route('vendor_leads.kyc', ['page' => request('page')]) }}" class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors shadow-sm">
-                    Back to Vendor KYC
-                </a>
-            @else
-                <a href="{{ route('leads.index', ['page' => request('page')]) }}" class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors shadow-sm">
-                    Back to Leads
-                </a>
-            @endif
-            @can('lead-edit')
-            <a href="{{ route('leads.edit', [$lead->id, 'page' => request('page')]) }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm">
-                Edit Lead
-            </a>
-            @endcan
-
-                @can('raise-invoice-bu')
-                <a href="{{ route('invoices.create', ['lead_id' => $lead->id]) }}" 
-                class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Raise Invoice BU
-                </a>
-                @endcan
-
-                @can('raise-invoice-or')
-                <a href="{{ route('or-invoices.create', ['lead_id' => $lead->id]) }}" 
-                class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-lg font-medium hover:bg-indigo-100 transition-colors shadow-sm flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Invoice OR
-                </a>
-                @endcan
-
-            @if($lead->isClient() && auth()->user()->can('client-po-access'))
-                <a href="{{ route('manage_po.client_po.create', ['lead_id' => $lead->id, 'customer_id' => $lead->customer_id]) }}" 
-                class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors shadow-sm flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                    Client PO
-                </a>
-
-                @if($lead->creation_source === 'CLIENT REGISTRATION')
-                    @if($lead->is_agreement_sent)
-                        <span class="bg-indigo-100 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-lg font-bold shadow-sm flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                            Agreement Sent
-                        </span>
-                    @else
-                        <form action="{{ route('leads.send_agreement', $lead->id) }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                Send Agreement
-                            </button>
-                        </form>
-                    @endif
-                @endif
-            @elseif($lead->isVendor() && auth()->user()->can('vendor-po-access'))
-                <a href="{{ route('manage_po.vendor_po', ['lead_id' => $lead->id]) }}" 
-                class="bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors shadow-sm flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                    Vendor PO
-                </a>
-            @endif
 
             @can('lead-delete')
                 <div x-data="{ showDeleteModal: false }">
