@@ -66,6 +66,7 @@
                             </td>
                             <td class="py-4 px-4">
                                 <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="hidden" name="timings[{{ $index }}][is_working_day]" value="0">
                                     <input type="checkbox" name="timings[{{ $index }}][is_working_day]" value="1" class="sr-only working-day-toggle" data-index="{{ $index }}" {{ $timing->is_working_day ? 'checked' : '' }}>
                                     <div class="custom-toggle"></div>
                                 </label>

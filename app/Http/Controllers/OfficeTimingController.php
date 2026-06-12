@@ -35,7 +35,7 @@ class OfficeTimingController extends Controller
             $timing = \App\Models\OfficeTiming::find($timingData['id']);
             if ($timing) {
                 $timing->update([
-                    'is_working_day' => isset($timingData['is_working_day']),
+                    'is_working_day' => !empty($timingData['is_working_day']),
                     'start_time' => $timingData['start_time'] ?? null,
                     'end_time' => $timingData['end_time'] ?? null,
                 ]);

@@ -19,7 +19,13 @@ class CheckOfficeTiming
             return $next($request);
         }
 
-        if (auth()->check() && auth()->user()->isAdmin()) {
+        // Allow unauthenticated users to proceed so they can reach the login page
+        if (!auth()->check()) {
+            return $next($request);
+        }
+
+        // Allow admins to bypass the time check
+        if (auth()->user()->isAdmin()) {
             return $next($request);
         }
 
@@ -30,7 +36,8 @@ class CheckOfficeTiming
         $timing = \App\Models\OfficeTiming::where('day_of_week', $currentDay)->first();
 
         if ($timing) {
-            if (!$timing->is_working_day) {
+            // Check if today is marked as a non-working day
+            if (empty($timing->is_working_day) || $timing->is_working_day == 0 || $timing->is_working_day == false) {
                 return redirect()->route('office_closed');
             }
 
