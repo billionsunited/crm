@@ -32,7 +32,7 @@ class VendorKycController extends Controller
 
             // 1. Find or create Customer
             $mobile = $request->input('mobile_no');
-            $customer = Customer::findByMobileAndContext($mobile, 'VENDOR KYC API');
+            $customer = Customer::where('mobile_no', $mobile)->first();
             if (!$customer) {
                 $customer = Customer::create([
                     'email_id' => $email,

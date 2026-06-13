@@ -21,7 +21,7 @@ class ClientMsaController extends Controller
             $clientName = $request->input('client_name');
             $companyName = $request->input('company_name');
 
-            $customer = Customer::findByMobileAndContext($mobile, 'CLIENT KYC');
+            $customer = Customer::where('mobile_no', $mobile)->first();
 
             $customerData = [
                 'client_name' => $clientName,

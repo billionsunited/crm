@@ -265,7 +265,7 @@
                                 <div class="mb-1"><span class="w-bold">Address:</span> <span
                                         class="w-normal">{{ $invoice->address }}</span></div>
                                 <div class="mb-1"><span class="w-bold">State & Code:</span> <span
-                                        class="w-normal">{{ $invoice->state ?? 'Karnataka' }} ({{ $invoice->state_code ?? '29' }})</span></div>
+                                        class="w-normal">{{ $invoice->customer->state_name ?: ($invoice->state ?: 'Karnataka') }} ({{ $invoice->customer->state_code ?: ($invoice->state_code ?: '29') }})</span></div>
                                 <div class="mb-1 flex items-center gap-2">
                                     <div><span class="w-bold">Mobile No:</span> <span class="w-normal">{{ $invoice->customer->mobile_no ?? 'NONE' }}</span></div>
                                     @php $mobileNo = $invoice->customer->mobile_no ?? null; @endphp

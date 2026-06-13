@@ -186,21 +186,26 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" @click.stop>
                                 <div class="flex items-center justify-end gap-3">
+                                    @if(auth()->user()->isAdmin() || auth()->user()->can('invoice-view'))
                                     <a href="{{ route('invoices.show', $invoice->id) }}" class="text-blue-600 hover:text-blue-900 bg-blue-50 px-2 py-1 rounded-md hover:bg-blue-100 transition-colors">View</a>
+                                    @endif
                                     
                                     @if(!$invoice->is_cancelled)
-                                        @if(auth()->user()->isAdmin() && $invoice->is_paid)
-                                            <a href="{{ route('invoices.edit', $invoice->id) }}" class="text-amber-600 hover:text-amber-900 bg-amber-50 px-2 py-1 rounded-md hover:bg-amber-100 transition-colors">Edit</a>
-                                            <a href="{{ route('invoices.download', $invoice->id) }}" class="text-emerald-600 hover:text-emerald-900 bg-emerald-50 px-2 py-1 rounded-md hover:bg-emerald-100 transition-colors">Download</a>
-                                        @endif
-                                        
-                                        @if(auth()->user()->isAdmin())
-                                            @if(!$invoice->is_paid)
+                                        @if($invoice->is_paid)
+                                            @if(auth()->user()->isAdmin() || auth()->user()->can('invoice-edit'))
+                                                <a href="{{ route('invoices.edit', $invoice->id) }}" class="text-amber-600 hover:text-amber-900 bg-amber-50 px-2 py-1 rounded-md hover:bg-amber-100 transition-colors">Edit</a>
+                                            @endif
+                                            @if(auth()->user()->isAdmin())
+                                                <a href="{{ route('invoices.download', $invoice->id) }}" class="text-emerald-600 hover:text-emerald-900 bg-emerald-50 px-2 py-1 rounded-md hover:bg-emerald-100 transition-colors">Download</a>
+                                            @endif
+                                        @else
+                                            @if(auth()->user()->isAdmin() || auth()->user()->can('invoice-mark-paid'))
                                                 <form action="{{ route('invoices.mark_paid', $invoice->id) }}" method="POST" class="inline-block m-0">
                                                     @csrf
                                                     <button type="submit" onclick="return confirm('Are you sure you want to mark this as paid? This will generate the final invoice number.')" class="text-emerald-600 hover:text-emerald-900 bg-emerald-50 px-2 py-1 rounded-md hover:bg-emerald-100 transition-colors">Mark as Paid</button>
                                                 </form>
-                                                
+                                            @endif
+                                            @if(auth()->user()->isAdmin() || auth()->user()->can('invoice-cancel'))
                                                 <form action="{{ route('invoices.cancel', $invoice->id) }}" method="POST" class="inline-block m-0">
                                                     @csrf
                                                     <button type="submit" onclick="return confirm('Are you sure you want to cancel this PROFORMA invoice?')" class="text-rose-600 hover:text-rose-900 bg-rose-50 px-2 py-1 rounded-md hover:bg-rose-100 transition-colors">Cancel</button>
@@ -208,7 +213,7 @@
                                             @endif
                                         @endif
                                     @else
-                                        @if(auth()->user()->isAdmin())
+                                        @if(auth()->user()->isAdmin() || auth()->user()->can('invoice-delete'))
                                             <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST" class="inline-block m-0">
                                                 @csrf
                                                 @method('DELETE')

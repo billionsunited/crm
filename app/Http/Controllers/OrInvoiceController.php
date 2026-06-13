@@ -95,7 +95,7 @@ class OrInvoiceController extends Controller
         $month = $request->input('month');
         $year = $request->input('year');
 
-        $query = Invoice::with('items')
+        $query = Invoice::with(['items', 'customer'])
             ->where('invoice_per_type', 'or')
             ->where('is_paid', true)
             ->whereYear('paid_at', $year)
@@ -126,6 +126,8 @@ class OrInvoiceController extends Controller
             'Client Name',
             'Organisation Name',
             'City',
+            'State',
+            'State Code',
             'GSTIN',
             'Tax Type',
             'Item HSN/SAC',
@@ -166,6 +168,8 @@ class OrInvoiceController extends Controller
                         $invoice->client_name,
                         $invoice->organisation_name,
                         $invoice->city,
+                        $invoice->customer->state_name ?? ($invoice->state ?? 'Karnataka'),
+                        $invoice->customer->state_code ?? ($invoice->state_code ?? '29'),
                         strtoupper($invoice->gstin_unique_id),
                         $invoice->tax_type,
                         $hsnSacs ?: '',
@@ -370,6 +374,9 @@ class OrInvoiceController extends Controller
     public function edit(Invoice $invoice)
     {
         $this->enforceOrType($invoice);
+        if (!auth()->user()->isAdmin() && !auth()->user()->can('invoice-edit')) {
+            abort(403, 'Unauthorized action.');
+        }
         $invoice->load('items');
         
         // Load only customers who have 'Client KYC' or 'Client Terms' leads
@@ -407,6 +414,9 @@ class OrInvoiceController extends Controller
     public function update(Request $request, Invoice $invoice)
     {
         $this->enforceOrType($invoice);
+        if (!auth()->user()->isAdmin() && !auth()->user()->can('invoice-edit')) {
+            abort(403, 'Unauthorized action.');
+        }
 
         $request->validate([
             'lead_id' => 'required|exists:leads,id',
@@ -608,7 +618,7 @@ class OrInvoiceController extends Controller
     public function markAsPaid(Invoice $invoice, InvoiceService $invoiceService)
     {
         $this->enforceOrType($invoice);
-        if (!auth()->user()->isAdmin()) {
+        if (!auth()->user()->isAdmin() && !auth()->user()->can('invoice-mark-paid')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -640,7 +650,7 @@ class OrInvoiceController extends Controller
     public function cancel(Invoice $invoice)
     {
         $this->enforceOrType($invoice);
-        if (!auth()->user()->isAdmin()) {
+        if (!auth()->user()->isAdmin() && !auth()->user()->can('invoice-cancel')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -684,7 +694,7 @@ class OrInvoiceController extends Controller
     public function destroy(Invoice $invoice)
     {
         $this->enforceOrType($invoice);
-        if (!auth()->user()->isAdmin()) {
+        if (!auth()->user()->isAdmin() && !auth()->user()->can('invoice-delete')) {
             abort(403, 'Unauthorized action.');
         }
 

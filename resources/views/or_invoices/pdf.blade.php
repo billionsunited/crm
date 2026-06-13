@@ -201,7 +201,7 @@
                 <div class="mb-4"><span class="w-bold">Name:</span> <span class="w-normal">{{ $invoice->client_name }}</span></div>
                 <div class="mb-4"><span class="w-bold">Organization Name:</span> <span class="w-bold uppercase">{{ $invoice->organisation_name !== 'None' ? $invoice->organisation_name : 'None' }}</span></div>
                 <div class="mb-4"><span class="w-bold">Address:</span> <span class="w-normal">{{ $invoice->address }}</span></div>
-                <div class="mb-2"><span class="w-bold">State & Code:</span> <span class="w-normal">{{ $invoice->state ?? 'Karnataka' }} ({{ $invoice->state_code ?? '29' }})</span></div>
+                <div class="mb-4"><span class="w-bold">State & Code:</span> <span class="w-normal">{{ $invoice->customer->state_name ?: ($invoice->state ?: 'Karnataka') }} ({{ $invoice->customer->state_code ?: ($invoice->state_code ?: '29') }})</span></div>
                 <div class="mb-2"><span class="w-bold">Mobile No:</span> <span class="w-normal">{{ $invoice->customer->mobile_no ?? 'NONE' }}</span></div>
                 <div class="mb-2"><span class="w-bold">Email Id:</span> <span class="w-normal">{{ $invoice->customer->email_id ?? 'NONE' }}</span></div>
                 <div class="mb-2"><span class="w-bold">Aadhar No:</span> <span class="w-normal uppercase">{{ $invoice->aadhar_no ?? 'NONE' }}</span></div>

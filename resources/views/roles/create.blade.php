@@ -64,7 +64,7 @@
                     $groupedPermissions = [
                         'Dashboard' => ['dashboard-access'],
                         'Lead Management' => ['lead-view', 'lead-edit', 'lead-add', 'lead-delete', 'lead-import', 'lead-export', 'lead-send-document', 'whatsapp-icon', 'lead-contact-view'],
-                        'Financials & Invoices' => ['invoice-section', 'invoice-export', 'invoice-or-section', 'invoice-or-export', 'raise-invoice-bu', 'raise-invoice-or', 'email-section'],
+                        'Financials & Invoices' => ['invoice-section', 'invoice-export', 'invoice-view', 'invoice-edit', 'invoice-mark-paid', 'invoice-cancel', 'invoice-delete', 'invoice-or-section', 'invoice-or-export', 'raise-invoice-bu', 'raise-invoice-or', 'email-section'],
                         'Vendors & Partners' => ['vendor-section'],
                         'Marketing' => ['campaign-send'],
                         'Enquiry Campaign' => ['campaign-view', 'campaign-add', 'campaign-edit', 'campaign-delete', 'campaign-import', 'campaign-export', 'enquiry-vendor-contact-view'],
