@@ -18,6 +18,8 @@ class ClientRegistrationRequest extends FormRequest
             'agreement_date'        => ['nullable', 'date'],
             'company_name'          => ['nullable', 'string', 'max:255'],
             'place'                 => ['nullable', 'string', 'max:255'],
+            'state_name'            => ['nullable', 'string', 'max:255'],
+            'state_code'            => ['nullable', 'string', 'max:255'],
             'registered_address'    => ['nullable', 'string'],
             'mobile_no'             => ['nullable', 'string', 'max:255'],
             'firm_type'             => ['nullable', 'string', 'max:255'],

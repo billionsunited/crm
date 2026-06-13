@@ -10,6 +10,8 @@ class Customer extends Model
         'company_name',
         'client_name',
         'place',
+        'state_name',
+        'state_code',
         'registered_address',
         'mobile_no',
         'email_id',

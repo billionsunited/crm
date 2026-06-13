@@ -28,6 +28,8 @@ class ClientRegistrationController extends Controller
                 'client_name' => $clientName,
                 'company_name' => $companyName,
                 'place' => $request->input('place'),
+                'state_name' => $request->input('state_name'),
+                'state_code' => $request->input('state_code'),
                 'registered_address' => $request->input('registered_address'),
                 'mobile_no' => $mobile,
                 'email_id' => $email,
