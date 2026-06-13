@@ -38,6 +38,8 @@ class VendorKycRequest extends FormRequest
             'msa_document' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
             'contact_person' => 'nullable|string|max:255',
             'ip_address' => 'nullable|string|max:45',
+            'state_name' => 'nullable|string|max:255',
+            'state_code' => 'nullable|string|max:255',
         ];
     }
 }

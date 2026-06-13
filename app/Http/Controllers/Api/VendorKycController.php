@@ -42,7 +42,17 @@ class VendorKycController extends Controller
                     'place' => $request->input('place'),
                     'registered_address' => $request->input('vendor_address'),
                     'ip_address' => $request->input('ip_address'),
+                    'state_name' => $request->input('state_name'),
+                    'state_code' => $request->input('state_code'),
                 ]);
+            } else {
+                $updateData = [];
+                if ($request->filled('state_name')) $updateData['state_name'] = $request->input('state_name');
+                if ($request->filled('state_code')) $updateData['state_code'] = $request->input('state_code');
+                
+                if (!empty($updateData)) {
+                    $customer->update($updateData);
+                }
             }
 
             // 2. Handle File Uploads
