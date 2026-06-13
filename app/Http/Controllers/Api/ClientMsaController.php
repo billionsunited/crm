@@ -31,6 +31,8 @@ class ClientMsaController extends Controller
                 'mobile_no' => $mobile,
                 'email_id' => $email,
                 'ip_address' => $request->input('ip_address'),
+                'state_name' => $request->input('state_name'),
+                'state_code' => $request->input('state_code'),
             ];
 
             if ($request->hasFile('signature_path')) {

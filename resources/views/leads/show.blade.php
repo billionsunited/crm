@@ -367,6 +367,14 @@
                         <span class="block text-base text-slate-900 mt-1 break-words">{{ $lead->company_address ?: '-' }}</span>
                     </div>
                     <div>
+                        <span class="block text-sm font-medium text-slate-500">State Name</span>
+                        <span class="block text-base text-slate-900 mt-1">{{ $lead->customer->state_name ?: '-' }}</span>
+                    </div>
+                    <div>
+                        <span class="block text-sm font-medium text-slate-500">State Code</span>
+                        <span class="block text-base text-slate-900 mt-1">{{ $lead->customer->state_code ?: '-' }}</span>
+                    </div>
+                    <div>
                         <span class="block text-sm font-medium text-slate-500">PAN Number</span>
                         <span class="block text-base text-slate-900 mt-1 uppercase">{{ $lead->pan_number ?: '-' }}</span>
                     </div>

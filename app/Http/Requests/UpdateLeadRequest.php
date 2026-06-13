@@ -25,6 +25,8 @@ class UpdateLeadRequest extends FormRequest
             // Customer Details
             'customer_name' => 'required|string|max:255',
             'city' => 'nullable|string|max:255',
+            'state_name' => 'nullable|string|max:255',
+            'state_code' => 'nullable|string|max:255',
             'mobile' => 'nullable|string|max:20',
             'email_id' => 'nullable|email|max:255',
 

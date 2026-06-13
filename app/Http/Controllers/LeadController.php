@@ -786,6 +786,8 @@ class LeadController extends Controller
                     'registered_address' => $data['company_address'] ?? $customer->registered_address,
                     'mobile_no' => $data['mobile'] ?? $customer->mobile_no,
                     'email_id' => $email ?? $customer->email_id,
+                    'state_name' => $data['state_name'] ?? $customer->state_name,
+                    'state_code' => $data['state_code'] ?? $customer->state_code,
                 ]);
             } else {
                 $customer = Customer::create([
@@ -795,6 +797,8 @@ class LeadController extends Controller
                     'registered_address' => $data['company_address'] ?? null,
                     'mobile_no' => $data['mobile'] ?? null,
                     'email_id' => $email,
+                    'state_name' => $data['state_name'] ?? null,
+                    'state_code' => $data['state_code'] ?? null,
                 ]);
             }
 
@@ -845,6 +849,8 @@ class LeadController extends Controller
                     'registered_address' => $data['company_address'] ?? null,
                     'mobile_no' => $data['mobile'] ?? null,
                     'email_id' => $data['email_id'] ?? null,
+                    'state_name' => $data['state_name'] ?? null,
+                    'state_code' => $data['state_code'] ?? null,
                 ]);
             }
 

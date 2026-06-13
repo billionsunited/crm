@@ -174,7 +174,19 @@
             </svg>
             Company Info
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" x-data="{
+            stateName: '{{ old('state_name', $lead->customer->state_name ?? '') }}',
+            stateCode: '{{ old('state_code', $lead->customer->state_code ?? '') }}',
+            updateStateCode(e) {
+                const selectedOption = e.target.options[e.target.selectedIndex];
+                const code = selectedOption.getAttribute('data-code');
+                if (code) {
+                    this.stateCode = code;
+                } else if (!this.stateName) {
+                    this.stateCode = '';
+                }
+            }
+        }">
             <div>
                 <label for="company_name" class="block text-sm font-medium text-slate-700 mb-1">Company Name</label>
                 <input type="text" name="company_name" id="company_name"
@@ -185,6 +197,56 @@
                 <label for="company_address" class="block text-sm font-medium text-slate-700 mb-1">Company Address</label>
                 <textarea name="company_address" id="company_address" rows="1"
                     class="w-full px-4 py-2.5 rounded-lg border-slate-300 focus:border-indigo-500 shadow-sm">{{ old('company_address', $lead->company_address ?? '') }}</textarea>
+            </div>
+            <div>
+                <label for="state_name" class="block text-sm font-medium text-slate-700 mb-1">State Name</label>
+                <select name="state_name" id="state_name" x-model="stateName" @change="updateStateCode"
+                    class="w-full h-11 px-4 rounded-lg border-slate-300 focus:border-indigo-500 shadow-sm">
+                      <option value="">Select State</option>
+                      <option value="Jammu and Kashmir" data-code="01">Jammu and Kashmir</option>
+                      <option value="Himachal Pradesh" data-code="02">Himachal Pradesh</option>
+                      <option value="Punjab" data-code="03">Punjab</option>
+                      <option value="Chandigarh" data-code="04">Chandigarh</option>
+                      <option value="Uttarakhand" data-code="05">Uttarakhand</option>
+                      <option value="Haryana" data-code="06">Haryana</option>
+                      <option value="Delhi" data-code="07">Delhi</option>
+                      <option value="Rajasthan" data-code="08">Rajasthan</option>
+                      <option value="Uttar Pradesh" data-code="09">Uttar Pradesh</option>
+                      <option value="Bihar" data-code="10">Bihar</option>
+                      <option value="Sikkim" data-code="11">Sikkim</option>
+                      <option value="Arunachal Pradesh" data-code="12">Arunachal Pradesh</option>
+                      <option value="Nagaland" data-code="13">Nagaland</option>
+                      <option value="Manipur" data-code="14">Manipur</option>
+                      <option value="Mizoram" data-code="15">Mizoram</option>
+                      <option value="Tripura" data-code="16">Tripura</option>
+                      <option value="Meghalaya" data-code="17">Meghalaya</option>
+                      <option value="Assam" data-code="18">Assam</option>
+                      <option value="West Bengal" data-code="19">West Bengal</option>
+                      <option value="Jharkhand" data-code="20">Jharkhand</option>
+                      <option value="Odisha" data-code="21">Odisha</option>
+                      <option value="Chhattisgarh" data-code="22">Chhattisgarh</option>
+                      <option value="Madhya Pradesh" data-code="23">Madhya Pradesh</option>
+                      <option value="Gujarat" data-code="24">Gujarat</option>
+                      <option value="Dadra and Nagar Haveli and Daman and Diu" data-code="26">Dadra and Nagar Haveli and Daman and Diu</option>
+                      <option value="Maharashtra" data-code="27">Maharashtra</option>
+                      <option value="Karnataka" data-code="29">Karnataka</option>
+                      <option value="Goa" data-code="30">Goa</option>
+                      <option value="Lakshadweep" data-code="31">Lakshadweep</option>
+                      <option value="Kerala" data-code="32">Kerala</option>
+                      <option value="Tamil Nadu" data-code="33">Tamil Nadu</option>
+                      <option value="Puducherry" data-code="34">Puducherry</option>
+                      <option value="Andaman and Nicobar Islands" data-code="35">Andaman and Nicobar Islands</option>
+                      <option value="Telangana" data-code="36">Telangana</option>
+                      <option value="Andhra Pradesh" data-code="37">Andhra Pradesh</option>
+                      <option value="Ladakh" data-code="38">Ladakh</option>
+                      <option value="Other Territory" data-code="97">Other Territory</option>
+                      <option value="Central Jurisdiction" data-code="99">Central Jurisdiction</option>
+                </select>
+            </div>
+            <div>
+                <label for="state_code" class="block text-sm font-medium text-slate-700 mb-1">State Code</label>
+                <input type="text" name="state_code" id="state_code" x-model="stateCode"
+                    class="w-full h-11 px-4 rounded-lg border-slate-300 focus:border-indigo-500 shadow-sm uppercase">
             </div>
             <div>
                 <label for="website" class="block text-sm font-medium text-slate-700 mb-1">Website</label>
@@ -219,6 +281,8 @@
     @else
         <input type="hidden" name="company_name" value="{{ old('company_name', $lead->company_name ?? '') }}">
         <input type="hidden" name="company_address" value="{{ old('company_address', $lead->company_address ?? '') }}">
+        <input type="hidden" name="state_name" value="{{ old('state_name', $lead->customer->state_name ?? '') }}">
+        <input type="hidden" name="state_code" value="{{ old('state_code', $lead->customer->state_code ?? '') }}">
         <input type="hidden" name="website" value="{{ old('website', $lead->website ?? '') }}">
         <input type="hidden" name="gst_no" value="{{ old('gst_no', $lead->gst_no ?? '') }}">
         <input type="hidden" name="pan_number" value="{{ old('pan_number', $lead->pan_number ?? '') }}">

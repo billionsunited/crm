@@ -23,6 +23,8 @@ class ClientMsaRequest extends FormRequest
             'mobile_no' => ['nullable', 'string', 'max:255'],
             'firm_type' => ['nullable', 'string', 'max:255'],
             'email_id' => ['nullable', 'email', 'max:255'],
+            'state_name' => ['nullable', 'string', 'max:255'],
+            'state_code' => ['nullable', 'string', 'max:255'],
 
             'pan_card_copy' => ['nullable'],
             'doc_pan' => ['nullable'],
