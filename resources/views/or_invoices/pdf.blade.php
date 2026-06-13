@@ -201,6 +201,7 @@
                 <div class="mb-4"><span class="w-bold">Name:</span> <span class="w-normal">{{ $invoice->client_name }}</span></div>
                 <div class="mb-4"><span class="w-bold">Organization Name:</span> <span class="w-bold uppercase">{{ $invoice->organisation_name !== 'None' ? $invoice->organisation_name : 'None' }}</span></div>
                 <div class="mb-4"><span class="w-bold">Address:</span> <span class="w-normal">{{ $invoice->address }}</span></div>
+                <div class="mb-2"><span class="w-bold">State & Code:</span> <span class="w-normal">{{ $invoice->state ?? 'Karnataka' }} ({{ $invoice->state_code ?? '29' }})</span></div>
                 <div class="mb-2"><span class="w-bold">Mobile No:</span> <span class="w-normal">{{ $invoice->customer->mobile_no ?? 'NONE' }}</span></div>
                 <div class="mb-2"><span class="w-bold">Email Id:</span> <span class="w-normal">{{ $invoice->customer->email_id ?? 'NONE' }}</span></div>
                 <div class="mb-2"><span class="w-bold">Aadhar No:</span> <span class="w-normal uppercase">{{ $invoice->aadhar_no ?? 'NONE' }}</span></div>
@@ -227,12 +228,12 @@
                     <tr>
                         <td class="w-bold" style="padding: 4px 0;">State</td>
                         <td style="padding: 4px 0;">:</td>
-                        <td class="w-normal" style="padding: 4px 0;">Karnataka</td>
+                        <td class="w-normal" style="padding: 4px 0;">{{ $invoice->state ?? 'Karnataka' }}</td>
                     </tr>
                     <tr>
                         <td class="w-bold" style="padding: 4px 0;">State Code</td>
                         <td style="padding: 4px 0;">:</td>
-                        <td class="w-bold" style="padding: 4px 0;">29</td>
+                        <td class="w-bold" style="padding: 4px 0;">{{ $invoice->state_code ?? '29' }}</td>
                     </tr>
                 </table>
             </td>

@@ -264,6 +264,8 @@
                                 </div>
                                 <div class="mb-1"><span class="w-bold">Address:</span> <span
                                         class="w-normal">{{ $invoice->address }}</span></div>
+                                <div class="mb-1"><span class="w-bold">State & Code:</span> <span
+                                        class="w-normal">{{ $invoice->state ?? 'Karnataka' }} ({{ $invoice->state_code ?? '29' }})</span></div>
                                 <div class="mb-1 flex items-center gap-2">
                                     <div><span class="w-bold">Mobile No:</span> <span class="w-normal">{{ $invoice->customer->mobile_no ?? 'NONE' }}</span></div>
                                     @php $mobileNo = $invoice->customer->mobile_no ?? null; @endphp
@@ -311,12 +313,12 @@
                                     <tr>
                                         <td class="w-bold" style="padding: 4px 8px; border: none !important;">State</td>
                                         <td style="padding: 4px 8px; border: none !important;">:</td>
-                                        <td class="w-normal" style="padding: 4px 8px; border: none !important;">Karnataka</td>
+                                        <td class="w-normal" style="padding: 4px 8px; border: none !important;">{{ $invoice->state ?? 'Karnataka' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="w-bold" style="padding: 4px 8px; border: none !important;">State Code</td>
                                         <td style="padding: 4px 8px; border: none !important;">:</td>
-                                        <td class="w-bold" style="padding: 4px 8px; border: none !important;">29</td>
+                                        <td class="w-bold" style="padding: 4px 8px; border: none !important;">{{ $invoice->state_code ?? '29' }}</td>
                                     </tr>
                                 </table>
                             </td>

@@ -433,6 +433,14 @@
                             gstin_unique_id: lead.gstin_unique_id !== 'None' ? lead.gstin_unique_id : '',
                             purchase_order: this.receiver.purchase_order || '',
                         };
+
+                        const stateName = (this.receiver.state || '').toLowerCase().trim();
+                        const stateCode = (this.receiver.state_code || '').trim();
+                        if (stateName !== 'karnataka' || stateCode !== '29') {
+                            this.taxType = 'outstation';
+                        } else {
+                            this.taxType = 'local';
+                        }
                     }
                 },
 
