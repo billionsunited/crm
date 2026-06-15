@@ -34,8 +34,8 @@
                     Meta</h2>
 
                 <!-- Input selection inline -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div>
+                <div class="mb-6">
+                    <div class="w-full">
                         <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Select Lead
                             / Client <span class="text-rose-500">*</span></label>
                         <!-- Custom Searchable Dropdown for Lead Selection -->
@@ -119,6 +119,9 @@
                     </div>
 
 
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Due
                             Date <span class="text-rose-500">*</span></label>
