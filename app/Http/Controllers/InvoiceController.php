@@ -47,7 +47,7 @@ class InvoiceController extends Controller
             ", [$filter]);
         }
 
-        $invoices = $query->paginate(10)->withQueryString();
+        $invoices = $query->paginate(30)->withQueryString();
 
         // Handle empty page due to deletion or filtering
         if ($invoices->isEmpty() && $invoices->currentPage() > 1) {
@@ -524,7 +524,7 @@ class InvoiceController extends Controller
 
         $invoice->update(['pdf_file_path' => $path]);
 
-        return redirect()->route('invoices.show', $invoice->id)->with('success', 'Invoice updated successfully.');
+        return redirect()->route('invoices.show', [$invoice->id, 'page' => $request->query('page')])->with('success', 'Invoice updated successfully.');
     }
 
     public function download(Request $request, Invoice $invoice)

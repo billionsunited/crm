@@ -10,7 +10,7 @@
 
         <div class="mb-8 flex flex-col md:flex-row gap-4 justify-between md:items-center">
             <h1 class="text-2xl md:text-3xl text-slate-800 font-bold">Edit Invoice ✨</h1>
-            <a href="{{ route('invoices.show', $invoice->id) }}"
+            <a href="{{ route('invoices.show', [$invoice->id, 'page' => request('page')]) }}"
                 class="inline-flex h-11 w-full md:w-auto items-center justify-center rounded-xl border border-slate-300 bg-white px-6 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 whitespace-nowrap">Back to Invoice</a>
         </div>
 
@@ -24,7 +24,7 @@
             </div>
         @endif
 
-        <form action="{{ route('invoices.update', $invoice->id) }}" method="POST" class="space-y-8">
+        <form action="{{ route('invoices.update', [$invoice->id, 'page' => request('page')]) }}" method="POST" class="space-y-8">
             @csrf
             @method('PUT')
 
@@ -363,7 +363,7 @@
             </div>
 
             <div class="flex flex-col md:flex-row justify-end items-stretch md:items-center gap-4 mt-12 pb-16">
-                <a href="{{ route('invoices.show', $invoice->id) }}"
+                <a href="{{ route('invoices.show', [$invoice->id, 'page' => request('page')]) }}"
                     class="inline-flex h-12 w-full md:w-auto min-w-[140px] items-center justify-center rounded-xl border border-slate-300 bg-white px-8 text-base font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 whitespace-nowrap">
                     Cancel Edit
                 </a>

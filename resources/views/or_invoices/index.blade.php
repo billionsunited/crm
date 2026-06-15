@@ -148,7 +148,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-200 bg-white">
                     @forelse($invoices as $invoice)
-                        <tr @click="window.location='{{ route('or-invoices.show', $invoice->id) . '?page=' . $invoices->currentPage() }}'" class="hover:bg-slate-50 transition-colors group cursor-pointer" style="cursor: pointer;">
+                        <tr @click="window.location='{{ route('or-invoices.show', [$invoice->id, 'page' => $invoices->currentPage()]) }}'" class="hover:bg-slate-50 transition-colors group cursor-pointer" style="cursor: pointer;">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="text-sm font-medium text-slate-900 border border-slate-200 bg-white shadow-sm px-2 py-1 rounded-md">
                                     @if($invoice->is_paid || $invoice->is_cancelled)
@@ -187,13 +187,13 @@
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" @click.stop>
                                 <div class="flex items-center justify-end gap-3">
                                     @if(auth()->user()->isAdmin() || auth()->user()->can('invoice-view'))
-                                    <a href="{{ route('or-invoices.show', $invoice->id) }}" class="text-blue-600 hover:text-blue-900 bg-blue-50 px-2 py-1 rounded-md hover:bg-blue-100 transition-colors">View</a>
+                                    <a href="{{ route('or-invoices.show', [$invoice->id, 'page' => $invoices->currentPage()]) }}" class="text-blue-600 hover:text-blue-900 bg-blue-50 px-2 py-1 rounded-md hover:bg-blue-100 transition-colors">View</a>
                                     @endif
                                     
                                     @if(!$invoice->is_cancelled)
                                         @if($invoice->is_paid)
                                             @if(auth()->user()->isAdmin() || auth()->user()->can('invoice-edit'))
-                                                <a href="{{ route('or-invoices.edit', $invoice->id) }}" class="text-amber-600 hover:text-amber-900 bg-amber-50 px-2 py-1 rounded-md hover:bg-amber-100 transition-colors">Edit</a>
+                                                <a href="{{ route('or-invoices.edit', [$invoice->id, 'page' => $invoices->currentPage()]) }}" class="text-amber-600 hover:text-amber-900 bg-amber-50 px-2 py-1 rounded-md hover:bg-amber-100 transition-colors">Edit</a>
                                             @endif
                                             @if(auth()->user()->isAdmin())
                                                 <a href="{{ route('or-invoices.download', $invoice->id) }}" class="text-emerald-600 hover:text-emerald-900 bg-emerald-50 px-2 py-1 rounded-md hover:bg-emerald-100 transition-colors">Download</a>
