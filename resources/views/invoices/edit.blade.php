@@ -56,7 +56,9 @@
                                     get selectedLabel() {
                                         if (!this.selectedLeadId) return '-- Choose an Existing Client --';
                                         const lead = window.leadsData.find(l => String(l.id) === String(this.selectedLeadId));
-                                        if (!lead) return '-- Choose an Existing Client --';
+                                        if (!lead) {
+                                            return `{!! addslashes($invoice->organisation_name !== 'None' ? $invoice->organisation_name : $invoice->client_name) !!} (Current)`;
+                                        }
                                         const name = lead.organisation_name !== 'None' ? lead.organisation_name : lead.client_name;
                                         return `${name} - ${lead.record_id}`;
                                     }

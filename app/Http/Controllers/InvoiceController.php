@@ -47,7 +47,7 @@ class InvoiceController extends Controller
             ", [$filter]);
         }
 
-        $invoices = $query->paginate(30)->withQueryString();
+        $invoices = $query->paginate(50)->withQueryString();
 
         // Handle empty page due to deletion or filtering
         if ($invoices->isEmpty() && $invoices->currentPage() > 1) {
