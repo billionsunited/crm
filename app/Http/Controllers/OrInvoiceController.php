@@ -288,8 +288,8 @@ class OrInvoiceController extends Controller
             $dbItems[] = [
                 'service_name' => $item['service_name'],
                 'hsn_sac' => $item['hsn_sac'] ?? null,
-                'qty' => $qty ?? 1,
-                'rate' => $rate ?? ($total ?? 0),
+                'qty' => $qty,
+                'rate' => $rate,
                 'total' => $total ?? 0,
             ];
             $taxableValue += ($total ?? 0);
@@ -467,8 +467,8 @@ class OrInvoiceController extends Controller
             $dbItems[] = [
                 'service_name' => $item['service_name'],
                 'hsn_sac' => $item['hsn_sac'] ?? null,
-                'qty' => $qty ?? 1,
-                'rate' => $rate ?? ($total ?? 0),
+                'qty' => $qty,
+                'rate' => $rate,
                 'total' => $total ?? 0,
             ];
             $taxableValue += ($total ?? 0);

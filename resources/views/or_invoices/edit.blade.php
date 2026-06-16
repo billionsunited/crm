@@ -409,7 +409,7 @@
                     purchase_order: {!! json_encode($invoice->purchase_order) !!},
                 },
 
-                items: {!! $invoice->items->count() > 0 ? $invoice->items->map(function($i) { return ['service_name' => $i->service_name, 'custom_name' => '', 'hsn_sac' => $i->hsn_sac, 'qty' => $i->qty, 'rate' => $i->rate, 'total' => $i->total, 'calculatedMode' => 'auto']; })->toJson() : json_encode([['service_name' => $invoice->service_description_meta ?? '', 'custom_name' => '', 'hsn_sac' => '7117', 'qty' => 1, 'rate' => $invoice->taxable_value, 'total' => $invoice->taxable_value, 'calculatedMode' => 'auto']]) !!},
+                items: {!! $invoice->items->count() > 0 ? $invoice->items->map(function($i) { return ['service_name' => $i->service_name, 'custom_name' => '', 'hsn_sac' => $i->hsn_sac, 'qty' => $i->qty, 'rate' => $i->rate, 'total' => $i->total, 'calculatedMode' => 'auto']; })->toJson() : json_encode([['service_name' => $invoice->service_description_meta ?? '', 'custom_name' => '', 'hsn_sac' => '7117', 'qty' => '', 'rate' => '', 'total' => $invoice->taxable_value, 'calculatedMode' => 'auto']]) !!},
 
                 handleLeadChange() {
                     const id = parseInt(this.selectedLeadId);
