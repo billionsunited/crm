@@ -57,6 +57,7 @@ class VendorKycController extends Controller
 
             // 2. Handle File Uploads
             $documentPaths = [];
+            $extractedNumbers = [];
             $fileFields = [
                 'pan_card_copy' => 'doc_pan',
                 'aadhar_card' => 'doc_aadhar',
@@ -65,9 +66,31 @@ class VendorKycController extends Controller
                 'vendor_agreement' => 'msa_document',
             ];
 
+            $extractionService = app(\App\Services\DocumentNumberExtractionService::class);
+            $ocrMap = [
+                'doc_pan' => ['type' => 'PAN', 'field' => 'pan_number'],
+                'doc_aadhar' => ['type' => 'Aadhaar', 'field' => 'aadhar_no'],
+                'doc_gst' => ['type' => 'GST', 'field' => 'gst_no'],
+                'doc_certificate_incorporation_udyam' => ['type' => 'Udyam', 'field' => 'udyam_registration_certificate'],
+            ];
+
             foreach ($fileFields as $requestKey => $dbColumn) {
                 if ($request->hasFile($requestKey)) {
                     $file = $request->file($requestKey);
+
+                    // API OCR Extraction
+                    if (isset($ocrMap[$dbColumn])) {
+                        try {
+                            $ocrResult = $extractionService->extractDocumentNumber($file, $ocrMap[$dbColumn]['type']);
+                            if (isset($ocrResult['success']) && $ocrResult['success'] && !empty($ocrResult['document_number'])) {
+                                $extractedNumbers[$ocrMap[$dbColumn]['field']] = $ocrResult['document_number'];
+                                Log::info("OCR Extracted {$ocrMap[$dbColumn]['type']} number via Vendor KYC API");
+                            }
+                        } catch (\Exception $e) {
+                            Log::error("API OCR Extraction failed for {$dbColumn}: " . $e->getMessage());
+                        }
+                    }
+
                     $filename = time() . '_' . $file->getClientOriginalName();
                     $path = $file->storeAs('vendor_kyc_docs', $filename, 'public');
                     $documentPaths[$dbColumn] = $path;
@@ -76,6 +99,20 @@ class VendorKycController extends Controller
                     // Check if maybe it's coming via the DB column name key directly
                     if ($request->hasFile($dbColumn)) {
                         $file = $request->file($dbColumn);
+
+                        // API OCR Extraction
+                        if (isset($ocrMap[$dbColumn])) {
+                            try {
+                                $ocrResult = $extractionService->extractDocumentNumber($file, $ocrMap[$dbColumn]['type']);
+                                if (isset($ocrResult['success']) && $ocrResult['success'] && !empty($ocrResult['document_number'])) {
+                                    $extractedNumbers[$ocrMap[$dbColumn]['field']] = $ocrResult['document_number'];
+                                    Log::info("OCR Extracted {$ocrMap[$dbColumn]['type']} number via Vendor KYC API (fallback)");
+                                }
+                            } catch (\Exception $e) {
+                                Log::error("API OCR Extraction failed for {$dbColumn}: " . $e->getMessage());
+                            }
+                        }
+
                         $filename = time() . '_' . $file->getClientOriginalName();
                         $path = $file->storeAs('vendor_kyc_docs', $filename, 'public');
                         $documentPaths[$dbColumn] = $path;
@@ -104,7 +141,7 @@ class VendorKycController extends Controller
                 'comment' => '',
                 'kyc' => 'Done',
                 'master_service_agreement_signed' => 1,
-            ], $documentPaths);
+            ], $documentPaths, $extractedNumbers);
 
             // Handle date if provided
             if ($request->filled('agreement_date')) {

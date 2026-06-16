@@ -807,9 +807,31 @@ class LeadController extends Controller
 
             $docFields = ['doc_pan', 'doc_aadhar', 'doc_gst', 'doc_certificate_incorporation_udyam', 'doc_trai_dlt', 'doc_dsa_license', 'doc_company_id_card', 'msa_document'];
 
+            $extractionService = app(\App\Services\DocumentNumberExtractionService::class);
+            $ocrMap = [
+                'doc_pan' => ['type' => 'PAN', 'field' => 'pan_number'],
+                'doc_aadhar' => ['type' => 'Aadhaar', 'field' => 'aadhar_no'],
+                'doc_gst' => ['type' => 'GST', 'field' => 'gst_no'],
+                'doc_certificate_incorporation_udyam' => ['type' => 'Udyam', 'field' => 'udyam_registration_certificate'],
+            ];
+
             foreach ($docFields as $field) {
                 if ($request->hasFile($field)) {
-                    $leadData[$field] = $request->file($field)->store('documents/leads', 'public');
+                    $file = $request->file($field);
+                    
+                    // Run OCR Extraction when a document is uploaded
+                    if (isset($ocrMap[$field])) {
+                        try {
+                            $ocrResult = $extractionService->extractDocumentNumber($file, $ocrMap[$field]['type']);
+                            if (isset($ocrResult['success']) && $ocrResult['success'] && !empty($ocrResult['document_number'])) {
+                                $leadData[$ocrMap[$field]['field']] = $ocrResult['document_number'];
+                            }
+                        } catch (\Exception $e) {
+                            \Illuminate\Support\Facades\Log::error("Backend OCR Extraction failed for {$field}: " . $e->getMessage());
+                        }
+                    }
+
+                    $leadData[$field] = $file->store('documents/leads', 'public');
                 }
             }
 
@@ -858,12 +880,34 @@ class LeadController extends Controller
 
             $docFields = ['doc_pan', 'doc_aadhar', 'doc_gst', 'doc_certificate_incorporation_udyam', 'doc_trai_dlt', 'doc_dsa_license', 'doc_company_id_card', 'msa_document'];
 
+            $extractionService = app(\App\Services\DocumentNumberExtractionService::class);
+            $ocrMap = [
+                'doc_pan' => ['type' => 'PAN', 'field' => 'pan_number'],
+                'doc_aadhar' => ['type' => 'Aadhaar', 'field' => 'aadhar_no'],
+                'doc_gst' => ['type' => 'GST', 'field' => 'gst_no'],
+                'doc_certificate_incorporation_udyam' => ['type' => 'Udyam', 'field' => 'udyam_registration_certificate'],
+            ];
+
             foreach ($docFields as $field) {
                 if ($request->hasFile($field)) {
-                    if ($lead->{$field}) {
-                        Storage::disk('public')->delete($lead->{$field});
+                    $file = $request->file($field);
+
+                    // Run OCR Extraction when a document is uploaded
+                    if (isset($ocrMap[$field])) {
+                        try {
+                            $ocrResult = $extractionService->extractDocumentNumber($file, $ocrMap[$field]['type']);
+                            if (isset($ocrResult['success']) && $ocrResult['success'] && !empty($ocrResult['document_number'])) {
+                                $leadData[$ocrMap[$field]['field']] = $ocrResult['document_number'];
+                            }
+                        } catch (\Exception $e) {
+                            \Illuminate\Support\Facades\Log::error("Backend OCR Extraction failed for {$field}: " . $e->getMessage());
+                        }
                     }
-                    $leadData[$field] = $request->file($field)->store('documents/leads', 'public');
+
+                    if ($lead->{$field}) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($lead->{$field});
+                    }
+                    $leadData[$field] = $file->store('documents/leads', 'public');
                 }
             }
 

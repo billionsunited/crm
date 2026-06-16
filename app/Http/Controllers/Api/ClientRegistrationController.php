@@ -82,10 +82,47 @@ class ClientRegistrationController extends Controller
                 }
             }
 
-            // Handle Registration Document
-            if ($request->hasFile('registration_document')) {
-                $path = $request->file('registration_document')->store('documents/leads', 'public');
-                $leadData['msa_document'] = $path; // Store as MSA document equivalent
+            // Handle Registration Documents
+            $fileFields = [
+                'registration_document' => 'msa_document', // Store as MSA document equivalent
+                'pan_card_copy' => 'doc_pan',
+                'aadhar_card' => 'doc_aadhar',
+                'gst_certificate' => 'doc_gst',
+                'certificate_of_incorporation' => 'doc_certificate_incorporation_udyam',
+                'doc_pan' => 'doc_pan',
+                'doc_aadhar' => 'doc_aadhar',
+                'doc_gst' => 'doc_gst',
+                'doc_certificate_incorporation_udyam' => 'doc_certificate_incorporation_udyam',
+            ];
+
+            $extractionService = app(\App\Services\DocumentNumberExtractionService::class);
+            $ocrMap = [
+                'doc_pan' => ['type' => 'PAN', 'field' => 'pan_number'],
+                'doc_aadhar' => ['type' => 'Aadhaar', 'field' => 'aadhar_no'],
+                'doc_gst' => ['type' => 'GST', 'field' => 'gst_no'],
+                'doc_certificate_incorporation_udyam' => ['type' => 'Udyam', 'field' => 'udyam_registration_certificate'],
+            ];
+
+            foreach ($fileFields as $requestKey => $dbColumn) {
+                if ($request->hasFile($requestKey)) {
+                    $file = $request->file($requestKey);
+
+                    // API OCR Extraction
+                    if (isset($ocrMap[$dbColumn])) {
+                        try {
+                            $ocrResult = $extractionService->extractDocumentNumber($file, $ocrMap[$dbColumn]['type']);
+                            if (isset($ocrResult['success']) && $ocrResult['success'] && !empty($ocrResult['document_number'])) {
+                                $leadData[$ocrMap[$dbColumn]['field']] = $ocrResult['document_number'];
+                                Log::info("OCR Extracted {$ocrMap[$dbColumn]['type']} number via Client Registration API");
+                            }
+                        } catch (\Exception $e) {
+                            Log::error("API OCR Extraction failed for {$dbColumn}: " . $e->getMessage());
+                        }
+                    }
+
+                    $path = $file->store('documents/leads', 'public');
+                    $leadData[$dbColumn] = $path;
+                }
             }
 
             $lead = Lead::create($leadData);

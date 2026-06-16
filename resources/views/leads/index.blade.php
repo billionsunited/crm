@@ -631,18 +631,6 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" @click.stop>
                                     <div class="flex items-center justify-end gap-3">
-                                        @if(auth()->user()->can('client-po-access') && $lead->isClient())
-                                            <a href="{{ route('manage_po.client_po.create', ['lead_id' => $lead->id, 'customer_id' => $lead->customer_id]) }}"
-                                                class="text-emerald-600 hover:text-emerald-900 bg-emerald-50 px-2 py-1 rounded-md hover:bg-emerald-100 transition-colors flex items-center gap-1"
-                                                title="ADD Client PO">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                                </svg>
-                                                PO
-                                            </a>
-                                        @endif
-
                                         @if($lead->creation_source === 'CLIENT REGISTRATION')
                                             @if($lead->is_agreement_sent)
                                                 <span
@@ -666,109 +654,131 @@
                                                 </form>
                                             @endif
                                         @endif
-                                        <a href="{{ route('leads.show', [$lead->id, 'page' => request('page')]) }}"
-                                            class="text-blue-600 hover:text-blue-900 bg-blue-50 px-2 py-1 rounded-md hover:bg-blue-100 transition-colors">View</a>
-                                        @can('lead-edit')
-                                            <a href="{{ route('leads.edit', [$lead->id, 'page' => request('page')]) }}"
-                                                class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-2 py-1 rounded-md hover:bg-indigo-100 transition-colors">Edit</a>
-                                        @endcan
 
-                                        <!-- Campaign Button -->
-                                        @if(auth()->user()->isAdmin() || auth()->user()->can('campaign-send'))
-                                            <button type="button" @click="$dispatch('open-messaging-modal', { 
-                                                                    type: 'whatsapp', 
-                                                                    leadId: '{{ $lead->id }}', 
-                                                                    leadName: '{{ addslashes($lead->customer_name) }}', 
-                                                                    leadMobile: '{{ $lead->mobile }}',
-                                                                    isFilteredCampaign: {{ request()->hasAny(['search', 'lead_status', 'customer_type', 'industry', 'city', 'product', 'date_from', 'date_to']) ? 'true' : 'false' }},
-                                                                    filters: {
-                                                                        search: '{{ addslashes(request('search')) }}',
-                                                                        lead_status: '{{ addslashes(request('lead_status')) }}',
-                                                                        customer_type: '{{ addslashes(request('customer_type')) }}',
-                                                                        industry: '{{ addslashes(request('industry')) }}',
-                                                                        city: '{{ addslashes(request('city')) }}',
-                                                                        product: '{{ addslashes(request('product')) }}',
-                                                                        date_from: '{{ addslashes(request('date_from')) }}',
-                                                                        date_to: '{{ addslashes(request('date_to')) }}'
-                                                                    }
-                                                                })"
-                                                class="text-emerald-600 hover:text-emerald-900 bg-emerald-50 px-2 py-1 rounded-md hover:bg-emerald-100 transition-colors text-xs font-bold"
-                                                title="Mobile Marketing">
-                                                Mobile Marketing
+                                        <div x-data="{ actionOpen: false }" class="relative" :class="actionOpen ? 'z-50' : 'z-0'" @click.stop>
+                                            <button @click="actionOpen = !actionOpen" @click.away="actionOpen = false" type="button" class="inline-flex items-center gap-1 px-3 py-1.5 border border-slate-300 rounded-md bg-white text-slate-700 hover:bg-slate-50 transition-colors text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                                Actions
+                                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
                                             </button>
-                                        @endif
 
-                                        <!-- Send Email Marketing -->
-                                        @can('email-template-send')
-                                            <button type="button" @click="$dispatch('open-email-modal', { 
-                                                    bulkIds: ['{{ $lead->id }}'],
-                                                    isFilteredCampaign: {{ request()->hasAny(['search', 'lead_status', 'customer_type', 'industry', 'city', 'product', 'date_from', 'date_to']) ? 'true' : 'false' }},
-                                                    filters: {
-                                                        search: '{{ addslashes(request('search')) }}',
-                                                        lead_status: '{{ addslashes(request('lead_status')) }}',
-                                                        customer_type: '{{ addslashes(request('customer_type')) }}',
-                                                        industry: '{{ addslashes(request('industry')) }}',
-                                                        city: '{{ addslashes(request('city')) }}',
-                                                        product: '{{ addslashes(request('product')) }}',
-                                                        date_from: '{{ addslashes(request('date_from')) }}',
-                                                        date_to: '{{ addslashes(request('date_to')) }}'
-                                                    }
-                                                })"
-                                                class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-2 py-1 rounded-md hover:bg-indigo-100 transition-colors text-xs font-bold"
-                                                title="Send Email Marketing">
-                                                Send Email Marketing
-                                            </button>
-                                        @endcan
+                                            <div x-show="actionOpen" x-transition style="display: none;" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-slate-200 z-[60] overflow-hidden text-left">
+                                                <div class="py-1">
+                                                    <a href="{{ route('leads.show', [$lead->id, 'page' => request('page')]) }}"
+                                                        class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                                                        View
+                                                    </a>
+                                                    
+                                                    @can('lead-edit')
+                                                        <a href="{{ route('leads.edit', [$lead->id, 'page' => request('page')]) }}"
+                                                            class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors">
+                                                            Edit
+                                                        </a>
+                                                    @endcan
 
-                                        @can('lead-delete')
-                                            <div x-data="{ showModal: false }">
-                                                <button @click="showModal = true"
-                                                    class="text-red-600 hover:text-red-900 bg-red-50 px-2 py-1 rounded-md hover:bg-red-100 transition-colors">
-                                                    Delete
-                                                </button>
+                                                    @if(auth()->user()->can('client-po-access') && $lead->isClient())
+                                                        <a href="{{ route('manage_po.client_po.create', ['lead_id' => $lead->id, 'customer_id' => $lead->customer_id]) }}"
+                                                            class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-emerald-600 transition-colors">
+                                                            Add Client PO
+                                                        </a>
+                                                    @endif
 
-                                                <div x-show="showModal"
-                                                    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
-                                                    style="display: none;" x-transition>
-                                                    <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 text-center transform transition-all whitespace-normal"
-                                                        @click.away="showModal = false">
-                                                        <div class="mb-4">
-                                                            <div
-                                                                class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
-                                                                <svg class="h-6 w-6 text-red-600" fill="none"
-                                                                    viewBox="0 0 24 24" stroke-width="1.5"
-                                                                    stroke="currentColor">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                                                </svg>
-                                                            </div>
-                                                            <h3 class="text-lg font-bold text-slate-800">Delete Lead</h3>
-                                                            <p class="text-sm text-slate-600 mt-2">
-                                                                Are you sure you want to delete lead
-                                                                <strong>#{{ $lead->record_id }}</strong>? Documents will be
-                                                                removed. This action cannot be undone.
-                                                            </p>
-                                                        </div>
-                                                        <div class="flex justify-center gap-3 w-full mt-6">
-                                                            <button @click="showModal = false" type="button"
-                                                                class="w-full justify-center px-4 py-2 border border-slate-300 bg-white text-slate-700 rounded-lg hover:bg-slate-50 font-medium shadow-sm">
-                                                                Cancel
+                                                    @if(auth()->user()->isAdmin() || auth()->user()->can('campaign-send'))
+                                                        <button type="button" @click="$dispatch('open-messaging-modal', { 
+                                                                                type: 'whatsapp', 
+                                                                                leadId: '{{ $lead->id }}', 
+                                                                                leadName: '{{ addslashes($lead->customer_name) }}', 
+                                                                                leadMobile: '{{ $lead->mobile }}',
+                                                                                isFilteredCampaign: {{ request()->hasAny(['search', 'lead_status', 'customer_type', 'industry', 'city', 'product', 'date_from', 'date_to']) ? 'true' : 'false' }},
+                                                                                filters: {
+                                                                                    search: '{{ addslashes(request('search')) }}',
+                                                                                    lead_status: '{{ addslashes(request('lead_status')) }}',
+                                                                                    customer_type: '{{ addslashes(request('customer_type')) }}',
+                                                                                    industry: '{{ addslashes(request('industry')) }}',
+                                                                                    city: '{{ addslashes(request('city')) }}',
+                                                                                    product: '{{ addslashes(request('product')) }}',
+                                                                                    date_from: '{{ addslashes(request('date_from')) }}',
+                                                                                    date_to: '{{ addslashes(request('date_to')) }}'
+                                                                                }
+                                                                            })"
+                                                            class="w-full text-left block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-emerald-600 transition-colors">
+                                                            Mobile Marketing
+                                                        </button>
+                                                    @endif
+
+                                                    @can('email-template-send')
+                                                        <button type="button" @click="$dispatch('open-email-modal', { 
+                                                                bulkIds: ['{{ $lead->id }}'],
+                                                                isFilteredCampaign: {{ request()->hasAny(['search', 'lead_status', 'customer_type', 'industry', 'city', 'product', 'date_from', 'date_to']) ? 'true' : 'false' }},
+                                                                filters: {
+                                                                    search: '{{ addslashes(request('search')) }}',
+                                                                    lead_status: '{{ addslashes(request('lead_status')) }}',
+                                                                    customer_type: '{{ addslashes(request('customer_type')) }}',
+                                                                    industry: '{{ addslashes(request('industry')) }}',
+                                                                    city: '{{ addslashes(request('city')) }}',
+                                                                    product: '{{ addslashes(request('product')) }}',
+                                                                    date_from: '{{ addslashes(request('date_from')) }}',
+                                                                    date_to: '{{ addslashes(request('date_to')) }}'
+                                                                }
+                                                            })"
+                                                            class="w-full text-left block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors">
+                                                            Send Email Marketing
+                                                        </button>
+                                                    @endcan
+
+                                                    @can('lead-delete')
+                                                        <div x-data="{ showModal: false }" class="w-full">
+                                                            <button @click="showModal = true"
+                                                                class="w-full text-left block px-4 py-2 text-sm text-rose-600 hover:bg-slate-50 transition-colors font-medium">
+                                                                Delete
                                                             </button>
-                                                            <form
-                                                                action="{{ route('leads.destroy', [$lead->id, 'page' => request('page')]) }}"
-                                                                method="POST" class="w-full">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="w-full justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium shadow-sm transition-colors">
-                                                                    Delete
-                                                                </button>
-                                                            </form>
+
+                                                            <div x-show="showModal"
+                                                                class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+                                                                style="display: none;" x-transition>
+                                                                <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 text-center transform transition-all whitespace-normal"
+                                                                    @click.away="showModal = false">
+                                                                    <div class="mb-4">
+                                                                        <div
+                                                                            class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
+                                                                            <svg class="h-6 w-6 text-red-600" fill="none"
+                                                                                viewBox="0 0 24 24" stroke-width="1.5"
+                                                                                stroke="currentColor">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                                            </svg>
+                                                                        </div>
+                                                                        <h3 class="text-lg font-bold text-slate-800">Delete Lead</h3>
+                                                                        <p class="text-sm text-slate-600 mt-2">
+                                                                            Are you sure you want to delete lead
+                                                                            <strong>#{{ $lead->record_id }}</strong>? Documents will be
+                                                                            removed. This action cannot be undone.
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="flex justify-center gap-3 w-full mt-6">
+                                                                        <button @click="showModal = false" type="button"
+                                                                            class="w-full justify-center px-4 py-2 border border-slate-300 bg-white text-slate-700 rounded-lg hover:bg-slate-50 font-medium shadow-sm">
+                                                                            Cancel
+                                                                        </button>
+                                                                        <form
+                                                                            action="{{ route('leads.destroy', [$lead->id, 'page' => request('page')]) }}"
+                                                                            method="POST" class="w-full">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button type="submit"
+                                                                                class="w-full justify-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium shadow-sm transition-colors">
+                                                                                Delete
+                                                                            </button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    @endcan
                                                 </div>
                                             </div>
-                                        @endcan
+                                        </div>
                                     </div>
                                 </td>
                             </tr>

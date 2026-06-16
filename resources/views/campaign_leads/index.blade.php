@@ -535,72 +535,82 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" @click.stop>
                                         <div class="flex items-center justify-end gap-2">
-                                            <!-- View Button -->
-                                            <a href="{{ route('campaign-leads.show', $lead->id) }}"
-                                                class="text-blue-600 hover:text-blue-900 bg-blue-50 px-2 py-1 rounded-md hover:bg-blue-100 transition-colors text-xs font-bold">
-                                                View
-                                            </a>
-
-                                            <!-- Edit Button -->
-                                            @can('campaign-edit')
-                                            <a href="{{ route('campaign-leads.edit', $lead->id) }}"
-                                                class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-2 py-1 rounded-md hover:bg-indigo-100 transition-colors text-xs font-bold">
-                                                Edit
-                                            </a>
-                                            @endcan
-
-                                            <!-- Campaign Button -->
-                                            @if(auth()->user()->isAdmin() || auth()->user()->can('campaign-send'))
-                                            <button type="button" @click="$dispatch('open-messaging-modal', { 
-                                                    type: 'whatsapp', 
-                                                    leadId: '{{ $lead->id }}', 
-                                                    leadName: '{{ addslashes($lead->customer_name) }}', 
-                                                    leadMobile: '{{ $lead->mobile }}',
-                                                    campaignRoute: '{{ route('campaign-leads.send-campaign') }}',
-                                                    allContactsRoute: '{{ route('campaign-leads.all-contacts') }}',
-                                                    filteredContactsRoute: '{{ route('campaign-leads.filtered-contacts') }}',
-                                                    isFilteredCampaign: {{ request()->hasAny(['search', 'rate']) ? 'true' : 'false' }},
-                                                    filters: {
-                                                        search: '{{ addslashes(request('search')) }}',
-                                                        rate: '{{ addslashes(request('rate')) }}'
-                                                    }
-                                                })"
-                                                class="text-emerald-600 hover:text-emerald-900 bg-emerald-50 px-2 py-1 rounded-md hover:bg-emerald-100 transition-colors text-xs font-bold"
-                                                title="Mobile Marketing">
-                                                Mobile Marketing
-                                            </button>
-
-                                            <!-- Send Email Marketing -->
-                                            @can('email-template-send')
-                                            <button type="button" @click="$dispatch('open-email-modal', { 
-                                                    bulkIds: ['{{ $lead->id }}'],
-                                                    emailCampaignRoute: '{{ route('campaign-leads.send_email_campaign') }}',
-                                                    isFilteredCampaign: {{ request()->hasAny(['search', 'rate']) ? 'true' : 'false' }},
-                                                    filters: {
-                                                        search: '{{ addslashes(request('search')) }}',
-                                                        rate: '{{ addslashes(request('rate')) }}'
-                                                    }
-                                                })"
-                                                class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-2 py-1 rounded-md hover:bg-indigo-100 transition-colors text-xs font-bold"
-                                                title="Send Email Marketing">
-                                                Send Email Marketing
-                                            </button>
-                                            @endcan
-                                            @endif
-
-                                            <!-- Delete Button -->
-                                            @can('campaign-delete')
-                                            <form action="{{ route('campaign-leads.destroy', $lead->id) }}" method="POST"
-                                                class="inline"
-                                                onsubmit="return confirm('Are you sure you want to delete this lead?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="text-rose-600 hover:text-rose-900 bg-rose-50 px-2 py-1 rounded-md hover:bg-rose-100 transition-colors text-xs font-bold">
-                                                    Delete
+                                            <div x-data="{ actionOpen: false }" class="relative" :class="actionOpen ? 'z-50' : 'z-0'" @click.stop>
+                                                <button @click="actionOpen = !actionOpen" @click.away="actionOpen = false" type="button" class="inline-flex items-center gap-1 px-3 py-1.5 border border-slate-300 rounded-md bg-white text-slate-700 hover:bg-slate-50 transition-colors text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                                    Actions
+                                                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    </svg>
                                                 </button>
-                                            </form>
-                                            @endcan
+
+                                                <div x-show="actionOpen" x-transition style="display: none;" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-slate-200 z-[60] overflow-hidden text-left">
+                                                    <div class="py-1">
+                                                        <!-- View Button -->
+                                                        <a href="{{ route('campaign-leads.show', $lead->id) }}"
+                                                            class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
+                                                            View
+                                                        </a>
+
+                                                        <!-- Edit Button -->
+                                                        @can('campaign-edit')
+                                                        <a href="{{ route('campaign-leads.edit', $lead->id) }}"
+                                                            class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors">
+                                                            Edit
+                                                        </a>
+                                                        @endcan
+
+                                                        <!-- Campaign Button -->
+                                                        @if(auth()->user()->isAdmin() || auth()->user()->can('campaign-send'))
+                                                        <button type="button" @click="$dispatch('open-messaging-modal', { 
+                                                                type: 'whatsapp', 
+                                                                leadId: '{{ $lead->id }}', 
+                                                                leadName: '{{ addslashes($lead->customer_name) }}', 
+                                                                leadMobile: '{{ $lead->mobile }}',
+                                                                campaignRoute: '{{ route('campaign-leads.send-campaign') }}',
+                                                                allContactsRoute: '{{ route('campaign-leads.all-contacts') }}',
+                                                                filteredContactsRoute: '{{ route('campaign-leads.filtered-contacts') }}',
+                                                                isFilteredCampaign: {{ request()->hasAny(['search', 'rate']) ? 'true' : 'false' }},
+                                                                filters: {
+                                                                    search: '{{ addslashes(request('search')) }}',
+                                                                    rate: '{{ addslashes(request('rate')) }}'
+                                                                }
+                                                            })"
+                                                            class="w-full text-left block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-emerald-600 transition-colors">
+                                                            Mobile Marketing
+                                                        </button>
+
+                                                        <!-- Send Email Marketing -->
+                                                        @can('email-template-send')
+                                                        <button type="button" @click="$dispatch('open-email-modal', { 
+                                                                bulkIds: ['{{ $lead->id }}'],
+                                                                emailCampaignRoute: '{{ route('campaign-leads.send_email_campaign') }}',
+                                                                isFilteredCampaign: {{ request()->hasAny(['search', 'rate']) ? 'true' : 'false' }},
+                                                                filters: {
+                                                                    search: '{{ addslashes(request('search')) }}',
+                                                                    rate: '{{ addslashes(request('rate')) }}'
+                                                                }
+                                                            })"
+                                                            class="w-full text-left block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 transition-colors">
+                                                            Send Email Marketing
+                                                        </button>
+                                                        @endcan
+                                                        @endif
+
+                                                        <!-- Delete Button -->
+                                                        @can('campaign-delete')
+                                                        <form action="{{ route('campaign-leads.destroy', $lead->id) }}" method="POST"
+                                                            onsubmit="return confirm('Are you sure you want to delete this lead?')">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit"
+                                                                class="w-full text-left block px-4 py-2 text-sm text-rose-600 hover:bg-slate-50 transition-colors font-medium">
+                                                                Delete
+                                                            </button>
+                                                        </form>
+                                                        @endcan
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>

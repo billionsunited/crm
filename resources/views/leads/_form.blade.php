@@ -533,7 +533,19 @@
                                         </path>
                                     </svg> Uploaded</span>
                                 @if(auth()->user()->isAdmin())
-                                    <a href="{{ Str::startsWith($lead->$field, ['http://', 'https://']) ? $lead->$field : 'https://billionsunited.com/crm/storage/app/public/' . $lead->$field }}" target="_blank"
+                                    @php
+                                        $viewUrl = Str::startsWith($lead->$field, ['http://', 'https://']) ? $lead->$field : '';
+                                        if (empty($viewUrl)) {
+                                            if (request()->getHost() === 'localhost' || request()->getHost() === '127.0.0.1') {
+                                                // Local XAMPP path
+                                                $viewUrl = '/crm-billions/storage/app/public/' . $lead->$field;
+                                            } else {
+                                                // Production path
+                                                $viewUrl = 'https://billionsunited.com/crm/storage/app/public/' . $lead->$field;
+                                            }
+                                        }
+                                    @endphp
+                                    <a href="{{ $viewUrl }}" target="_blank"
                                         class="text-indigo-600 hover:text-indigo-800 underline font-medium">View File</a>
                                 @endif
                             </div>
@@ -544,3 +556,25 @@
         </div>
     @endcan
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ocrInputs = ['doc_pan', 'doc_aadhar', 'doc_gst', 'doc_certificate_incorporation_udyam'];
+    
+    ocrInputs.forEach(inputId => {
+        const fileInput = document.getElementById(inputId);
+        if (!fileInput) return;
+
+        fileInput.addEventListener('change', function(e) {
+            if (!this.files || this.files.length === 0) return;
+            
+            const file = this.files[0];
+            const maxSizeBytes = 1024 * 1024; // 1 MB
+
+            if (file.size > maxSizeBytes) {
+                alert('Warning: This file is larger than 1 MB. Automatic extraction (OCR) will not work. Please enter the document number manually or upload less than 1MB file.');
+            }
+        });
+    });
+});
+</script>

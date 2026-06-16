@@ -43,4 +43,9 @@ return [
         'base_url' => env('ALERTS365_BASE_URL', 'https://billions.alerts365.in'),
     ],
 
+    'ocr_space' => [
+        'api_key' => env('OCR_SPACE_API_KEY'),
+        'base_url' => env('OCR_SPACE_BASE_URL', 'https://api.ocr.space/parse/image'),
+    ],
+
 ];

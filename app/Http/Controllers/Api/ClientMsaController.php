@@ -94,11 +94,34 @@ class ClientMsaController extends Controller
                 'msa_file' => 'msa_document',
             ];
 
+            $extractionService = app(\App\Services\DocumentNumberExtractionService::class);
+            $ocrMap = [
+                'doc_pan' => ['type' => 'PAN', 'field' => 'pan_number'],
+                'doc_aadhar' => ['type' => 'Aadhaar', 'field' => 'aadhar_no'],
+                'doc_gst' => ['type' => 'GST', 'field' => 'gst_no'],
+                'doc_certificate_incorporation_udyam' => ['type' => 'Udyam', 'field' => 'udyam_registration_certificate'],
+            ];
+
             $uploadedDocs = [];
 
             foreach ($docMap as $inputKey => $dbColumn) {
                 if ($request->hasFile($inputKey)) {
-                    $path = $request->file($inputKey)->store('documents/leads', 'public');
+                    $file = $request->file($inputKey);
+
+                    // API OCR Extraction
+                    if (isset($ocrMap[$dbColumn])) {
+                        try {
+                            $ocrResult = $extractionService->extractDocumentNumber($file, $ocrMap[$dbColumn]['type']);
+                            if (isset($ocrResult['success']) && $ocrResult['success'] && !empty($ocrResult['document_number'])) {
+                                $leadData[$ocrMap[$dbColumn]['field']] = $ocrResult['document_number'];
+                                Log::info("OCR Extracted {$ocrMap[$dbColumn]['type']} number via Client MSA API");
+                            }
+                        } catch (\Exception $e) {
+                            Log::error("API OCR Extraction failed for {$dbColumn}: " . $e->getMessage());
+                        }
+                    }
+
+                    $path = $file->store('documents/leads', 'public');
                     $leadData[$dbColumn] = $path;
                     $uploadedDocs[] = $inputKey;
                     Log::info("Document uploaded via Client MSA API: $inputKey -> $path");
@@ -108,7 +131,22 @@ class ClientMsaController extends Controller
                 } else {
                     // Check if maybe it's coming via the DB column name key directly
                     if ($request->hasFile($dbColumn)) {
-                        $path = $request->file($dbColumn)->store('documents/leads', 'public');
+                        $file = $request->file($dbColumn);
+
+                        // API OCR Extraction
+                        if (isset($ocrMap[$dbColumn])) {
+                            try {
+                                $ocrResult = $extractionService->extractDocumentNumber($file, $ocrMap[$dbColumn]['type']);
+                                if (isset($ocrResult['success']) && $ocrResult['success'] && !empty($ocrResult['document_number'])) {
+                                    $leadData[$ocrMap[$dbColumn]['field']] = $ocrResult['document_number'];
+                                    Log::info("OCR Extracted {$ocrMap[$dbColumn]['type']} number via Client MSA API (fallback)");
+                                }
+                            } catch (\Exception $e) {
+                                Log::error("API OCR Extraction failed for {$dbColumn}: " . $e->getMessage());
+                            }
+                        }
+
+                        $path = $file->store('documents/leads', 'public');
                         $leadData[$dbColumn] = $path;
                         $uploadedDocs[] = $dbColumn;
                         Log::info("Document uploaded via Client MSA API (fallback key): $dbColumn -> $path");
