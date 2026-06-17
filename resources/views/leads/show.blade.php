@@ -250,14 +250,21 @@
                     <h3 class="text-lg font-semibold text-slate-800">Customer Details</h3>
                 </div>
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6">
-                    <div>
-                        <span class="block text-sm font-medium text-slate-500">Customer Name</span>
-                        <span class="block text-base text-slate-900 mt-1">{{ $lead->customer_name }}</span>
-                    </div>
+                    @if(request('from') === 'vendor_kyc' || (request('from') === null && $lead->isVendor()))
                     <div>
                         <span class="block text-sm font-medium text-slate-500">Company Name</span>
                         <span class="block text-base text-slate-900 mt-1">{{ $lead->company_name ?: '-' }}</span>
                     </div>
+                    @else
+                    <div>
+                        <span class="block text-sm font-medium text-slate-500">Customer Name</span>
+                        <span class="block text-base text-slate-900 mt-1">{{ $lead->customer_name }}</span>
+                    </div>
+                     <div>
+                        <span class="block text-sm font-medium text-slate-500">Company Name</span>
+                        <span class="block text-base text-slate-900 mt-1">{{ $lead->company_name ?: '-' }}</span>
+                    </div>
+                    @endif
                     @if($lead->contact_person)
                     <div>
                         <span class="block text-sm font-medium text-slate-500">Contact Person</span>
@@ -305,6 +312,7 @@
                         <span class="block text-sm font-medium text-slate-500">Reference</span>
                         <span class="block text-base text-slate-900 mt-1">{{ $lead->reference ?: '-' }}</span>
                     </div>
+                    
                 </div>
             </div>
 

@@ -66,10 +66,10 @@
                         'Lead Management' => ['lead-view', 'lead-edit', 'lead-add', 'lead-delete', 'lead-import', 'lead-export', 'lead-send-document', 'whatsapp-icon', 'lead-contact-view'],
                         'Financials & Invoices' => ['invoice-section', 'invoice-export', 'invoice-view', 'invoice-edit', 'invoice-mark-paid', 'invoice-cancel', 'invoice-delete', 'invoice-or-section', 'invoice-or-export', 'raise-invoice-bu', 'raise-invoice-or', 'email-section'],
                         'Vendors & Partners' => ['vendor-section'],
-                        'Marketing' => ['campaign-send'],
+                        'Marketing' => ['campaign-send', 'email-template-send'],
                         'Enquiry Campaign' => ['campaign-view', 'campaign-add', 'campaign-edit', 'campaign-delete', 'campaign-import', 'campaign-export', 'enquiry-vendor-contact-view'],
                         'Purchase Orders' => ['client-po-access', 'vendor-po-access'],
-                        'Email Templates' => ['email-template-view', 'email-template-add', 'email-template-edit', 'email-template-delete', 'email-template-send'],
+                        'Email Templates' => ['email-template-view', 'email-template-add', 'email-template-edit', 'email-template-delete'],
                         'Resource Management' => ['document-section', 'company-info-section'],
                     ];
                 @endphp

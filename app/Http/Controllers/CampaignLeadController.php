@@ -135,7 +135,7 @@ class CampaignLeadController extends Controller
 
         $campaignLead->update($validated);
 
-        return redirect()->route('campaign-leads.index')->with('success', 'Campaign lead updated successfully.');
+        return redirect()->route('campaign-leads.show', $campaignLead->id)->with('success', 'Campaign lead updated successfully.');
     }
 
     public function updateBlacklistFlag(Request $request, CampaignLead $campaignLead)
@@ -216,6 +216,7 @@ class CampaignLeadController extends Controller
 
         $callback = function () use ($query, $columns) {
             $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             fputcsv($file, $columns);
 
             $query->chunk(100, function ($leads) use ($file) {
@@ -402,6 +403,7 @@ class CampaignLeadController extends Controller
 
         $callback = function () use ($columns) {
             $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             fputcsv($file, $columns);
             fputcsv($file, [
                 'John Doe',

@@ -410,7 +410,7 @@
 
                     <tbody class="bg-white divide-y divide-slate-200">
                         @forelse($leads as $lead)
-                            <tr @click="window.location='{{ route('leads.show', [$lead->id, 'page' => request('page')]) }}'"
+                            <tr @click="window.location='{{ route('leads.show', [$lead->id, 'page' => request('page'), 'from' => 'leads']) }}'"
                                 class="hover:bg-slate-50/80 transition-colors group cursor-pointer"
                                 style="cursor: pointer;">
                                 <td class="px-6 py-4" @click.stop>
@@ -665,7 +665,7 @@
 
                                             <div x-show="actionOpen" x-transition style="display: none;" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-slate-200 z-[60] overflow-hidden text-left">
                                                 <div class="py-1">
-                                                    <a href="{{ route('leads.show', [$lead->id, 'page' => request('page')]) }}"
+                                                    <a href="{{ route('leads.show', [$lead->id, 'page' => request('page'), 'from' => 'leads']) }}"
                                                         class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
                                                         View
                                                     </a>

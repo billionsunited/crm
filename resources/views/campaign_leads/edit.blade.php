@@ -8,14 +8,19 @@
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Edit Campaign Lead</h1>
             <p class="text-slate-500 mt-1">Update lead information for campaigns.</p>
         </div>
-        <a href="{{ route('campaign-leads.index') }}" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 font-semibold transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-            Back to List
-        </a>
+        <div class="flex items-center gap-3">
+            <button type="submit" form="edit-campaign-lead-form" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors cursor-pointer text-sm">
+                Update Lead
+            </button>
+            <a href="{{ route('campaign-leads.index') }}" class="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 font-semibold transition-colors bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                Back to List
+            </a>
+        </div>
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <form action="{{ route('campaign-leads.update', $campaignLead->id) }}" method="POST" class="p-8">
+        <form action="{{ route('campaign-leads.update', $campaignLead->id) }}" method="POST" class="p-8" id="edit-campaign-lead-form">
             @csrf
             @method('PUT')
             

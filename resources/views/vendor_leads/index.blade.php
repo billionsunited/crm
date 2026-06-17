@@ -412,7 +412,7 @@
 
                         <tbody class="bg-white divide-y divide-slate-200">
                             @forelse($leads as $lead)
-                                <tr @click="window.location='{{ route('leads.show', $lead->id) }}'"
+                                <tr @click="window.location='{{ route('leads.show', [$lead->id, 'from' => $vendorType === 'kyc' ? 'vendor_kyc' : 'vendor_po']) }}'"
                                     class="hover:bg-slate-50/80 transition-colors group cursor-pointer"
                                     style="cursor: pointer;">
                                     <td class="px-6 py-4" @click.stop>
@@ -665,7 +665,7 @@
                                                             </a>
                                                         @endif
 
-                                                        <a href="{{ route('leads.show', $lead->id) }}"
+                                                        <a href="{{ route('leads.show', [$lead->id, 'from' => $vendorType === 'kyc' ? 'vendor_kyc' : 'vendor_po']) }}"
                                                             class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors">
                                                             View
                                                         </a>

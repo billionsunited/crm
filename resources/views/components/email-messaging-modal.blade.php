@@ -116,7 +116,7 @@
                                (selectedTheme === 'emerald' ? 'background-color: #064e3b;' : 
                                (selectedTheme === 'purple' ? 'background-color: #1e1b4b;' : 
                                                              'background-color: #111827;'))">
-                        <span class="text-xs font-black text-white uppercase tracking-widest">Billions United</span>
+                        <span class="text-xs font-black text-white uppercase tracking-widest" x-text="selectedTheme === 'purple' || selectedTheme === 'charcoal' ? 'UPDATES' : 'Billions United'">Billions United</span>
                     </div>
                     
                     <!-- Preview Body -->

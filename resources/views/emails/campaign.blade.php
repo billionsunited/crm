@@ -40,7 +40,7 @@
                     <tr>
                         <td style="background-color: {{ $headerBg }}; padding: 24px 40px; text-align: center;">
                             <div style="font-size: 26px; font-weight: 800; color: #ffffff; font-family: 'Inter', sans-serif; letter-spacing: 0.5px; text-transform: uppercase;">
-                                Billions United
+                                {{ in_array($theme, ['purple', 'charcoal']) ? 'UPDATES' : 'Billions United' }}
                             </div>
                         </td>
                     </tr>

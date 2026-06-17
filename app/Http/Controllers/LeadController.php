@@ -455,6 +455,7 @@ class LeadController extends Controller
 
         $callback = function () use ($query, $columns) {
             $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             fputcsv($file, $columns);
 
             $query->chunk(100, function ($leads) use ($file) {
@@ -566,6 +567,7 @@ class LeadController extends Controller
 
         $callback = function () use ($columns) {
             $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             fputcsv($file, $columns);
 
             $sampleRow = [
@@ -921,14 +923,7 @@ class LeadController extends Controller
 
             DB::commit();
 
-            $redirectRoute = 'leads.index';
-            if ($lead->creation_source && str_contains($lead->creation_source, 'VENDOR PO')) {
-                $redirectRoute = 'vendor_leads.po';
-            } elseif ($lead->creation_source && str_contains($lead->creation_source, 'VENDOR KYC')) {
-                $redirectRoute = 'vendor_leads.kyc';
-            }
-
-            return redirect()->route($redirectRoute, ['page' => $request->get('page')])->with('success', 'Lead updated successfully.');
+            return redirect()->route('leads.show', $lead->id)->with('success', 'Lead updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Error occurred: ' . $e->getMessage())->withInput();

@@ -128,6 +128,12 @@
 
         <!-- Table -->
         <div class="bg-white shadow-sm border border-slate-200 rounded-xl overflow-hidden">
+            @if($invoices->hasPages())
+            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+                {{ $invoices->appends(request()->query())->links('partials.pagination') }}
+            </div>
+            @endif
+            
             <!-- Top scrollbar -->
             <div id="top-scrollbar-container" class="overflow-x-auto overflow-y-hidden w-full border-b border-slate-100" style="display: none;">
                 <div id="top-scrollbar-dummy" style="height: 1px;"></div>

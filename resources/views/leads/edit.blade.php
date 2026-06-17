@@ -6,20 +6,25 @@
         <h2 class="text-2xl font-bold text-slate-800">Edit Lead #{{ $lead->record_id }}</h2>
         <p class="text-sm text-slate-500">Update lead details for {{ $lead->customer_name }}.</p>
     </div>
-    @if(isset($lead) && $lead->isVendor())
-        <a href="{{ route('vendor_leads.kyc', ['page' => request('page')]) }}" class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors shadow-sm">
-            Back to Vendor KYC
-        </a>
-    @else
-        <a href="{{ route('leads.index', ['page' => request('page')]) }}" class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors shadow-sm">
-            Back to Leads
-        </a>
-    @endif
+    <div class="flex items-center gap-3">
+        <button type="submit" form="edit-lead-form" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer">
+            Update Lead
+        </button>
+        @if(isset($lead) && $lead->isVendor())
+            <a href="{{ route('vendor_leads.kyc', ['page' => request('page')]) }}" class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors shadow-sm">
+                Back to Vendor KYC
+            </a>
+        @else
+            <a href="{{ route('leads.index', ['page' => request('page')]) }}" class="bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-slate-50 transition-colors shadow-sm">
+                Back to Leads
+            </a>
+        @endif
+    </div>
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
     <div class="p-6">
-        <form action="{{ route('leads.update', [$lead->id, 'page' => request('page')]) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('leads.update', [$lead->id, 'page' => request('page')]) }}" method="POST" enctype="multipart/form-data" id="edit-lead-form">
             @method('PUT')
             @include('leads._form', ['lead' => $lead])
             
