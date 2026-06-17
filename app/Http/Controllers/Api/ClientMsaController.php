@@ -108,6 +108,9 @@ class ClientMsaController extends Controller
                 if ($request->hasFile($inputKey)) {
                     $file = $request->file($inputKey);
 
+                    // Compress in place BEFORE OCR
+                    \App\Services\ImageCompressionService::compressInPlace($file);
+
                     // API OCR Extraction
                     if (isset($ocrMap[$dbColumn])) {
                         try {
@@ -121,7 +124,7 @@ class ClientMsaController extends Controller
                         }
                     }
 
-                    $path = $file->store('documents/leads', 'public');
+                    $path = \App\Services\ImageCompressionService::compressAndStore($file, 'documents/leads', 'public');
                     $leadData[$dbColumn] = $path;
                     $uploadedDocs[] = $inputKey;
                     Log::info("Document uploaded via Client MSA API: $inputKey -> $path");
@@ -132,6 +135,9 @@ class ClientMsaController extends Controller
                     // Check if maybe it's coming via the DB column name key directly
                     if ($request->hasFile($dbColumn)) {
                         $file = $request->file($dbColumn);
+
+                        // Compress in place BEFORE OCR
+                        \App\Services\ImageCompressionService::compressInPlace($file);
 
                         // API OCR Extraction
                         if (isset($ocrMap[$dbColumn])) {
@@ -146,7 +152,7 @@ class ClientMsaController extends Controller
                             }
                         }
 
-                        $path = $file->store('documents/leads', 'public');
+                        $path = \App\Services\ImageCompressionService::compressAndStore($file, 'documents/leads', 'public');
                         $leadData[$dbColumn] = $path;
                         $uploadedDocs[] = $dbColumn;
                         Log::info("Document uploaded via Client MSA API (fallback key): $dbColumn -> $path");

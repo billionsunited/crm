@@ -571,8 +571,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const file = this.files[0];
             const maxSizeBytes = 1024 * 1024; // 1 MB
 
-            if (file.size > maxSizeBytes) {
-                alert('Warning: This file is larger than 1 MB. Automatic extraction (OCR) will not work. Please enter the document number manually or upload less than 1MB file.');
+            // Only show warning for PDF files > 1MB, because images are compressed automatically on the backend
+            if (file.type === 'application/pdf' && file.size > maxSizeBytes) {
+                alert('Warning: This PDF file is larger than 1 MB. Automatic extraction (OCR) will not work. Please upload an Image (JPG/PNG) instead, or you will need to manually enter the document number.');
             }
         });
     });

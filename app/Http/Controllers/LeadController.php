@@ -818,6 +818,9 @@ class LeadController extends Controller
             foreach ($docFields as $field) {
                 if ($request->hasFile($field)) {
                     $file = $request->file($field);
+
+                    // Compress in place BEFORE OCR so large images are reduced in size
+                    \App\Services\ImageCompressionService::compressInPlace($file);
                     
                     // Run OCR Extraction when a document is uploaded
                     if (isset($ocrMap[$field])) {
@@ -831,7 +834,7 @@ class LeadController extends Controller
                         }
                     }
 
-                    $leadData[$field] = $file->store('documents/leads', 'public');
+                    $leadData[$field] = \App\Services\ImageCompressionService::compressAndStore($file, 'documents/leads', 'public');
                 }
             }
 
@@ -892,6 +895,9 @@ class LeadController extends Controller
                 if ($request->hasFile($field)) {
                     $file = $request->file($field);
 
+                    // Compress in place BEFORE OCR so large images are reduced in size
+                    \App\Services\ImageCompressionService::compressInPlace($file);
+
                     // Run OCR Extraction when a document is uploaded
                     if (isset($ocrMap[$field])) {
                         try {
@@ -907,7 +913,7 @@ class LeadController extends Controller
                     if ($lead->{$field}) {
                         \Illuminate\Support\Facades\Storage::disk('public')->delete($lead->{$field});
                     }
-                    $leadData[$field] = $file->store('documents/leads', 'public');
+                    $leadData[$field] = \App\Services\ImageCompressionService::compressAndStore($file, 'documents/leads', 'public');
                 }
             }
 

@@ -78,6 +78,9 @@ class VendorKycController extends Controller
                 if ($request->hasFile($requestKey)) {
                     $file = $request->file($requestKey);
 
+                    // Compress in place BEFORE OCR
+                    \App\Services\ImageCompressionService::compressInPlace($file);
+
                     // API OCR Extraction
                     if (isset($ocrMap[$dbColumn])) {
                         try {
@@ -92,13 +95,16 @@ class VendorKycController extends Controller
                     }
 
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $path = $file->storeAs('vendor_kyc_docs', $filename, 'public');
+                    $path = \App\Services\ImageCompressionService::compressAndStore($file, 'vendor_kyc_docs', 'public', $filename);
                     $documentPaths[$dbColumn] = $path;
                     Log::info("Document uploaded via Vendor KYC API: $requestKey -> $path");
                 } else {
                     // Check if maybe it's coming via the DB column name key directly
                     if ($request->hasFile($dbColumn)) {
                         $file = $request->file($dbColumn);
+
+                        // Compress in place BEFORE OCR
+                        \App\Services\ImageCompressionService::compressInPlace($file);
 
                         // API OCR Extraction
                         if (isset($ocrMap[$dbColumn])) {
@@ -114,7 +120,7 @@ class VendorKycController extends Controller
                         }
 
                         $filename = time() . '_' . $file->getClientOriginalName();
-                        $path = $file->storeAs('vendor_kyc_docs', $filename, 'public');
+                        $path = \App\Services\ImageCompressionService::compressAndStore($file, 'vendor_kyc_docs', 'public', $filename);
                         $documentPaths[$dbColumn] = $path;
                         Log::info("Document uploaded via Vendor KYC API (fallback key): $dbColumn -> $path");
                     }

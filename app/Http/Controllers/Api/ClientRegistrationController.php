@@ -107,6 +107,9 @@ class ClientRegistrationController extends Controller
                 if ($request->hasFile($requestKey)) {
                     $file = $request->file($requestKey);
 
+                    // Compress in place BEFORE OCR
+                    \App\Services\ImageCompressionService::compressInPlace($file);
+
                     // API OCR Extraction
                     if (isset($ocrMap[$dbColumn])) {
                         try {
@@ -120,7 +123,7 @@ class ClientRegistrationController extends Controller
                         }
                     }
 
-                    $path = $file->store('documents/leads', 'public');
+                    $path = \App\Services\ImageCompressionService::compressAndStore($file, 'documents/leads', 'public');
                     $leadData[$dbColumn] = $path;
                 }
             }

@@ -142,6 +142,16 @@ class DocumentNumberExtractionService
                 if (preg_match('/\b\d{2,3}\/\d{2,4}\/[A-Z]{1,2}\/\d{2,5}\/\d{4}\b/i', $normalized, $matches)) {
                     return strtoupper($matches[0]);
                 }
+                
+                // 4. NGO Darpan Unique ID (e.g. DL/2024/0447605)
+                if (preg_match('/\b[A-Z]{2}\/\d{4}\/\d{6,8}\b/i', $normalized, $matches)) {
+                    return strtoupper($matches[0]);
+                }
+
+                // 5. Trust Registration No (e.g. 2024/4/V/1297)
+                if (preg_match('/\b\d{4}\/\d{1,3}\/[A-Z]{1,2}\/\d{3,5}\b/i', $normalized, $matches)) {
+                    return strtoupper($matches[0]);
+                }
                 break;
         }
         

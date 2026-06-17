@@ -38,7 +38,7 @@ class ClientPoController extends Controller
             if ($request->hasFile('signature_path')) {
                 $file = $request->file('signature_path');
                 $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('signatures', $filename, 'public');
+                $path = \App\Services\ImageCompressionService::compressAndStore($file, 'signatures', 'public', $filename);
                 $customerData['signature_path'] = 'storage/' . $path;
                 Log::info('Signature saved for customer', ['path' => $customerData['signature_path']]);
             }

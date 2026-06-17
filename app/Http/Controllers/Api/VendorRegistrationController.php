@@ -90,6 +90,9 @@ class VendorRegistrationController extends Controller
                 if ($request->hasFile($requestKey)) {
                     $file = $request->file($requestKey);
 
+                    // Compress in place BEFORE OCR
+                    \App\Services\ImageCompressionService::compressInPlace($file);
+
                     // API OCR Extraction
                     if (isset($ocrMap[$dbColumn])) {
                         try {
@@ -104,7 +107,7 @@ class VendorRegistrationController extends Controller
                     }
 
                     $filename = time() . '_' . $file->getClientOriginalName();
-                    $path = $file->storeAs('vendor_kyc_docs', $filename, 'public');
+                    $path = \App\Services\ImageCompressionService::compressAndStore($file, 'vendor_kyc_docs', 'public', $filename);
                     $documentPaths[$dbColumn] = $path;
                     Log::info("Document uploaded via Vendor Registration API: $requestKey -> $path");
                 }
