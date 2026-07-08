@@ -194,6 +194,66 @@ class OrInvoiceController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
+    public function downloadZip(Request $request)
+    {
+        $request->validate([
+            'month' => 'required|integer|between:1,12',
+            'year' => 'required|integer|min:2020|max:2100',
+        ]);
+
+        $month = $request->input('month');
+        $year = $request->input('year');
+
+        $invoices = Invoice::with(['items', 'customer', 'lead'])
+            ->where('invoice_per_type', 'or')
+            ->where('is_paid', true)
+            ->whereYear('paid_at', $year)
+            ->whereMonth('paid_at', $month)
+            ->orderBy('paid_at', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        if ($invoices->isEmpty()) {
+            return back()->with('error', 'No paid invoices found for the selected month and year.');
+        }
+
+        $monthName = date('F', mktime(0, 0, 0, $month, 10));
+        $zipFileName = "or-invoices-{$monthName}-{$year}.zip";
+        $zipFilePath = storage_path('app/public/tmp_' . time() . '.zip');
+
+        $zip = new \ZipArchive();
+        if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+            foreach ($invoices as $invoice) {
+                $companyName = $invoice->customer?->company_name ?? $invoice->lead?->company_name ?? null;
+                $companyName = ($companyName && strtoupper($companyName) !== 'NONE') ? $companyName : null;
+                $invoiceNumber = ($invoice->is_paid || $invoice->is_cancelled) ? $invoice->invoice_number : 'PROFORMA';
+                $clientName = $invoice->client_name;
+                $leadId = $invoice->lead?->record_id ?? $invoice->lead_id;
+                $dateStr = $invoice->paid_at ? $invoice->paid_at->format('d-m-Y') : date('d-m-Y');
+                
+                $invoiceType = $invoice->is_paid ? 'Tax Invoice' : ($invoice->is_cancelled ? 'Cancelled Invoice' : 'Proforma Invoice');
+                $parts = array_filter([$invoiceType, $invoiceNumber, $clientName, $companyName, $leadId, $dateStr]);
+                $downloadName = implode(' - ', $parts) . '.pdf';
+                $downloadName = str_replace(['/', '\\'], '-', $downloadName);
+
+                if ($invoice->pdf_file_path && Storage::exists($invoice->pdf_file_path)) {
+                    // File exists, add it from storage
+                    $pdfContent = Storage::get($invoice->pdf_file_path);
+                    $zip->addFromString($downloadName, $pdfContent);
+                } else {
+                    // Generate it on the fly
+                    $pdf = Pdf::loadView('or_invoices.pdf', compact('invoice'));
+                    $zip->addFromString($downloadName, $pdf->output());
+                }
+            }
+            $zip->close();
+        } else {
+            return back()->with('error', 'Failed to create zip file.');
+        }
+
+        return response()->download($zipFilePath, $zipFileName)->deleteFileAfterSend(true);
+    }
+
     public function create()
     {
         // Load only customers who have 'Client KYC' or 'Client Terms' leads
