@@ -312,6 +312,10 @@
                         <span class="block text-sm font-medium text-slate-500">Reference</span>
                         <span class="block text-base text-slate-900 mt-1">{{ $lead->reference ?: '-' }}</span>
                     </div>
+                    <div>
+                        <span class="block text-sm font-medium text-slate-500">Designation</span>
+                        <span class="block text-base text-slate-900 mt-1">{{ $lead->designation ?: '-' }}</span>
+                    </div>
                     
                 </div>
             </div>
@@ -361,10 +365,6 @@
                                 ********
                             @endcan
                         </span>
-                    </div>
-                    <div>
-                        <span class="block text-sm font-medium text-slate-500">Designation</span>
-                        <span class="block text-base text-slate-900 mt-1">{{ $lead->designation ?: '-' }}</span>
                     </div>
                 </div>
             </div>
