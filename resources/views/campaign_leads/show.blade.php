@@ -177,6 +177,10 @@
                             {{ $campaignLead->rate ?: 'General' }}
                         </div>
                     </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Reference</label>
+                        <div class="text-sm font-bold text-slate-700">{{ $campaignLead->reference ?: 'N/A' }}</div>
+                    </div>
                 </div>
 
                 <div class="md:col-span-2 pt-6 border-t border-slate-100">

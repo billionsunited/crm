@@ -37,6 +37,7 @@ class CampaignLead extends Model
         'comment',
         'rate',
         'source',
-        'blacklist_flag'
+        'blacklist_flag',
+        'reference'
     ];
 }

@@ -135,6 +135,7 @@ class CampaignLeadController extends Controller
             'place' => 'nullable|string|max:255',
             'address' => 'nullable|string',
             'product_interested' => 'nullable|string|max:255',
+            'reference' => 'nullable|string|max:255',
             'comment' => 'nullable|string',
             'rate' => 'nullable|string',
         ]);
@@ -172,6 +173,7 @@ class CampaignLeadController extends Controller
             'place' => 'nullable|string|max:255',
             'address' => 'nullable|string',
             'product_interested' => 'nullable|string|max:255',
+            'reference' => 'nullable|string|max:255',
             'comment' => 'nullable|string',
             'rate' => 'nullable|string',
         ]);
@@ -343,6 +345,7 @@ class CampaignLeadController extends Controller
             'Address',
             'Product Interested',
             'Lead Type',
+            'Reference',
             'Comment'
         ];
 
@@ -366,6 +369,7 @@ class CampaignLeadController extends Controller
                         $lead->address,
                         $lead->product_interested,
                         $lead->rate,
+                        $lead->reference,
                         $lead->comment,
                     ]);
                 }
@@ -419,6 +423,7 @@ class CampaignLeadController extends Controller
                 'address' => 'address',
                 'product' => 'product_interested',
                 'product_interested' => 'product_interested',
+                'reference' => 'reference',
                 'comment' => 'comment',
                 'rate' => 'rate',
                 'lead_type' => 'rate',

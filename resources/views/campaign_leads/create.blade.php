@@ -142,6 +142,14 @@
                     </select>
                 </div>
 
+                <!-- Reference -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Reference</label>
+                    <input type="text" name="reference" value="{{ old('reference') }}"
+                        class="block w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                        placeholder="Reference (e.g., John Doe)">
+                </div>
+
                 <!-- Comment -->
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-slate-700 mb-2">Comment</label>

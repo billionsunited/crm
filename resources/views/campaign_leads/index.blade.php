@@ -409,6 +409,9 @@
                                     Lead Info</th>
                                 <th
                                     class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                    Reference</th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                                     Mobiles</th>
                                 <th
                                     class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -542,6 +545,9 @@
                                                 </span>
                                             @endif
                                         </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-700">
+                                        {{ $lead->reference ?: '-' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="space-y-1">
