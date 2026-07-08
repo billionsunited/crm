@@ -407,9 +407,7 @@
                                 <th
                                     class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                                     Lead Info</th>
-                                <th
-                                    class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                    Reference</th>
+
                                 <th
                                     class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                                     Mobiles</th>
@@ -521,7 +519,11 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-bold text-slate-900">{{ $lead->customer_name ?? 'N/A' }}
+                                        <div class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                                            {{ $lead->customer_name ?? 'N/A' }}
+                                            @if($lead->reference)
+                                                <span class="text-[10px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 uppercase tracking-wider" title="Reference">Ref: {{ $lead->reference }}</span>
+                                            @endif
                                         </div>
                                         <div class="text-xs text-slate-500">
                                             @can('enquiry-vendor-contact-view')
@@ -546,9 +548,7 @@
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-700">
-                                        {{ $lead->reference ?: '-' }}
-                                    </td>
+
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="space-y-1">
                                             @can('enquiry-vendor-contact-view')

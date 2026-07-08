@@ -26,11 +26,19 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <!-- Name -->
-                <div class="md:col-span-2">
+                <div class="md:col-span-1">
                     <label class="block text-sm font-bold text-slate-700 mb-2">Customer Name</label>
                     <input type="text" name="customer_name" value="{{ old('customer_name', $campaignLead->customer_name) }}" required
                         class="block w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                         placeholder="Full Name">
+                </div>
+
+                <!-- Reference -->
+                <div class="md:col-span-1">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Reference</label>
+                    <input type="text" name="reference" value="{{ old('reference', $campaignLead->reference) }}"
+                        class="block w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                        placeholder="Reference (e.g., John Doe)">
                 </div>
 
                 <!-- Mobiles -->
@@ -148,13 +156,7 @@
                     </select>
                 </div>
 
-                <!-- Reference -->
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Reference</label>
-                    <input type="text" name="reference" value="{{ old('reference', $campaignLead->reference) }}"
-                        class="block w-full h-12 px-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                        placeholder="Reference (e.g., John Doe)">
-                </div>
+
 
                 <!-- Comment -->
                 <div class="md:col-span-2">

@@ -115,6 +115,10 @@
                         <div class="text-lg font-bold text-slate-900">{{ $campaignLead->customer_name ?: 'N/A' }}</div>
                     </div>
                     <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Reference</label>
+                        <div class="text-sm font-bold text-slate-700">{{ $campaignLead->reference ?: 'N/A' }}</div>
+                    </div>
+                    <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Company Name</label>
                         <div class="text-sm font-semibold text-slate-700">{{ $campaignLead->company_name ?: 'N/A' }}</div>
                     </div>
@@ -184,10 +188,6 @@
                         <div class="inline-flex px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-100">
                             {{ $campaignLead->rate ?: 'General' }}
                         </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Reference</label>
-                        <div class="text-sm font-bold text-slate-700">{{ $campaignLead->reference ?: 'N/A' }}</div>
                     </div>
                 </div>
 
