@@ -17,15 +17,13 @@
                     </svg>
                     <span>Export Invoices</span>
                 </button>
-                @endcan
-                @if(auth()->user()->isAdmin())
                 <button type="button" @click="zipModalOpen = true" class="btn bg-slate-800 hover:bg-slate-900 text-white flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors shadow-sm cursor-pointer">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     <span>Download ZIP</span>
                 </button>
-                @endif
+                @endcan
                 <a href="{{ route('or-invoices.create') }}" class="btn bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors shadow-sm">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -361,7 +359,7 @@
         </div>
 
         <!-- Download ZIP Modal -->
-        @if(auth()->user()->isAdmin())
+        @can('invoice-or-export')
         <div x-show="zipModalOpen" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6" style="display: none;" x-cloak>
             <!-- Backdrop -->
             <div x-show="zipModalOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
@@ -440,7 +438,7 @@
                 </form>
             </div>
         </div>
-        @endif
+        @endcan
     </div>
 
     <script>

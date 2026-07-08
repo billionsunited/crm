@@ -152,7 +152,7 @@ Route::middleware('auth')->group(function () {
 
     // Invoices with permission checks
     Route::middleware('permission:invoice-export')->get('invoices-export', [InvoiceController::class, 'export'])->name('invoices.export');
-    Route::middleware('role:admin')->get('invoices-zip', [InvoiceController::class, 'downloadZip'])->name('invoices.download_zip');
+    Route::middleware('permission:invoice-export')->get('invoices-zip', [InvoiceController::class, 'downloadZip'])->name('invoices.download_zip');
 
     Route::middleware('permission:invoice-section')->group(function () {
         Route::resource('invoices', InvoiceController::class);
@@ -164,7 +164,7 @@ Route::middleware('auth')->group(function () {
 
     // OR Invoices with permission checks
     Route::middleware('permission:invoice-or-export')->get('or-invoices-export', [OrInvoiceController::class, 'export'])->name('or-invoices.export');
-    Route::middleware('role:admin')->get('or-invoices-zip', [OrInvoiceController::class, 'downloadZip'])->name('or-invoices.download_zip');
+    Route::middleware('permission:invoice-or-export')->get('or-invoices-zip', [OrInvoiceController::class, 'downloadZip'])->name('or-invoices.download_zip');
 
     Route::middleware('permission:invoice-or-section')->group(function () {
         Route::resource('or-invoices', OrInvoiceController::class)->parameters([
