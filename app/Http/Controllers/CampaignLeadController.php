@@ -60,7 +60,8 @@ class CampaignLeadController extends Controller
                     ->orWhere('email_id', 'like', "%{$search}%")
                     ->orWhere('email_id_1', 'like', "%{$search}%")
                     ->orWhere('company_name', 'like', "%{$search}%")
-                    ->orWhere('place', 'like', "%{$search}%");
+                    ->orWhere('place', 'like', "%{$search}%")
+                    ->orWhere('reference', 'like', "%{$search}%");
             });
         }
 
@@ -238,7 +239,8 @@ class CampaignLeadController extends Controller
                     ->orWhere('email_id', 'like', "%{$search}%")
                     ->orWhere('email_id_1', 'like', "%{$search}%")
                     ->orWhere('company_name', 'like', "%{$search}%")
-                    ->orWhere('place', 'like', "%{$search}%");
+                    ->orWhere('place', 'like', "%{$search}%")
+                    ->orWhere('reference', 'like', "%{$search}%");
             });
         }
 
@@ -618,7 +620,8 @@ class CampaignLeadController extends Controller
                     ->orWhere('email_id', 'like', "%{$search}%")
                     ->orWhere('email_id_1', 'like', "%{$search}%")
                     ->orWhere('company_name', 'like', "%{$search}%")
-                    ->orWhere('place', 'like', "%{$search}%");
+                    ->orWhere('place', 'like', "%{$search}%")
+                    ->orWhere('reference', 'like', "%{$search}%");
             });
         }
 
@@ -707,7 +710,8 @@ class CampaignLeadController extends Controller
                             ->orWhere('email_id', 'like', "%{$search}%")
                             ->orWhere('email_id_1', 'like', "%{$search}%")
                             ->orWhere('company_name', 'like', "%{$search}%")
-                            ->orWhere('place', 'like', "%{$search}%");
+                            ->orWhere('place', 'like', "%{$search}%")
+                            ->orWhere('reference', 'like', "%{$search}%");
                     });
                 }
                 if ($request->filled('rate')) {
