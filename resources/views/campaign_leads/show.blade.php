@@ -35,7 +35,15 @@
         <div class="flex items-center gap-3 mob-btn-group">
             @if(auth()->user()->isAdmin() || auth()->user()->can('campaign-send'))
             <button type="button"
-                @click="$dispatch('open-messaging-modal', { type: 'whatsapp', leadId: '{{ $campaignLead->id }}', leadName: '{{ addslashes($campaignLead->customer_name) }}', leadMobile: '{{ $campaignLead->mobile }}' })"
+                @click="$dispatch('open-messaging-modal', { 
+                    type: 'whatsapp', 
+                    leadId: '{{ $campaignLead->id }}', 
+                    leadName: '{{ addslashes($campaignLead->customer_name) }}', 
+                    leadMobile: '{{ $campaignLead->mobile }}',
+                    campaignRoute: '{{ route('campaign-leads.send-campaign') }}',
+                    allContactsRoute: '{{ route('campaign-leads.all-contacts') }}',
+                    filteredContactsRoute: '{{ route('campaign-leads.filtered-contacts') }}'
+                })"
                 class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg font-bold text-sm hover:bg-indigo-100 transition-all"
                 title="Mobile Marketing">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

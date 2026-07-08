@@ -55,6 +55,7 @@ class MessagingController extends Controller
         $lastResult = null;
 
         foreach ($mobiles as $to) {
+            $to = str_replace(' ', '', $to);
             if (strlen($to) == 10) {
                 $to = '+91' . $to;
             }
@@ -138,6 +139,7 @@ class MessagingController extends Controller
         $lastResult = null;
 
         foreach ($mobiles as $to) {
+            $to = str_replace(' ', '', $to);
             if (strlen($to) == 10) {
                 $to = '+91' . $to;
             }
@@ -217,6 +219,7 @@ class MessagingController extends Controller
         $lastResult = null;
 
         foreach ($mobiles as $mobile) {
+            $mobile = str_replace(' ', '', $mobile);
             if (strlen($mobile) == 10) {
                 $mobile = '+91' . $mobile;
             }

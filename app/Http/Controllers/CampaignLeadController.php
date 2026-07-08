@@ -470,6 +470,7 @@ class CampaignLeadController extends Controller
 
         foreach ($mobiles as $mobile) {
             // Ensure mobile number has country code for India if not present
+            $mobile = str_replace(' ', '', $mobile);
             if (strlen($mobile) == 10) {
                 $mobile = '+91' . $mobile;
             }
