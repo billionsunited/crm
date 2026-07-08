@@ -196,6 +196,7 @@ class InvoiceController extends Controller
 
         $invoices = Invoice::with(['items', 'customer', 'lead'])
             ->where('invoice_per_type', 'standard')
+            ->where('is_paid', true)
             ->whereYear('invoice_date', $year)
             ->whereMonth('invoice_date', $month)
             ->orderBy('invoice_date', 'asc')
