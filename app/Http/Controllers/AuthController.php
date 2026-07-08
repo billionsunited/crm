@@ -25,7 +25,9 @@ class AuthController extends Controller
             $user = Auth::user();
             $defaultRoute = 'profile.edit';
 
-            if ($user->hasRole('admin') || $user->can('dashboard-access')) {
+            if ($user->hasRole('admin')) {
+                $defaultRoute = 'leads.index';
+            } elseif ($user->can('dashboard-access')) {
                 $defaultRoute = 'dashboard';
             } elseif ($user->can('lead-view')) {
                 $defaultRoute = 'leads.index';

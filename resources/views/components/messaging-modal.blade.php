@@ -373,16 +373,17 @@
     </div>
 
     <!-- Progress Overlay: Only visible during bulk sending operations -->
-    <template x-if="isSending && (bulkIds.length > 1 || sendToAll || sendToFiltered)">
-        <div
-            class="absolute inset-0 bg-white/90 backdrop-blur-sm z-[100] flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-300">
-            <div class="w-full max-w-xs bg-slate-100 rounded-full h-3 mb-6 overflow-hidden border border-slate-200">
-                <div class="bg-indigo-600 h-full rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(79,70,229,0.4)]"
-                    :style="'width: ' + sendingProgress + '%'"></div>
+    <template x-if="isSending">
+        <div class="absolute inset-0 bg-white/90 backdrop-blur-sm z-[100] flex flex-col items-center justify-center p-8 text-center">
+            <div class="w-full max-w-xs bg-slate-100 rounded-full h-3 mb-2 overflow-hidden border border-slate-200">
+                <div class="bg-indigo-600 h-full transition-all duration-300" :style="`width: ${sendingProgress}%`"></div>
             </div>
-            <h4 class="text-lg font-bold text-slate-900 mb-1">Sending Messages</h4>
-            <p class="text-sm text-slate-600 font-medium mb-1" x-text="'Processing: ' + currentRecipientName"></p>
-            <p class="text-xs text-slate-400" x-text="Math.round(sendingProgress) + '% completed'"></p>
+            <div class="text-sm font-bold text-indigo-600 mb-6" x-text="`${sendingProgress}% Complete`"></div>
+            <h4 class="text-lg font-bold text-slate-900 mb-1">Sending Messages...</h4>
+            <p class="text-sm text-slate-500 mb-6">Processing <span class="font-semibold text-slate-700" x-text="currentRecipientName"></span>...</p>
+            <button type="button" @click="stopRequested = true; currentRecipientName = 'Stopping...';" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-bold transition-colors shadow-sm">
+                Stop Campaign
+            </button>
         </div>
     </template>
 </div>
@@ -430,6 +431,7 @@
             smsPreview: '',
 
             isSending: false,
+            stopRequested: false,
             sendingProgress: 0,
             currentRecipientName: '',
             sendToAll: false,
@@ -496,6 +498,7 @@
                 this.rcsFields = [];
                 this.rcsParamValues = {};
                 this.isSending = false;
+                this.stopRequested = false;
                 this.sendingProgress = 0;
                 this.currentRecipientName = '';
                 this.sendToFiltered = isFiltered;
@@ -773,6 +776,7 @@
                 }
 
                 this.isSending = true;
+                this.stopRequested = false;
                 this.sendingProgress = 0;
 
                 let recipients = [];
@@ -854,6 +858,10 @@
                     this.currentRecipientName = currentName;
                     this.sendingProgress = Math.round(((i) / total) * 100);
 
+                    if (this.stopRequested) {
+                        break;
+                    }
+
                     const template = this.templates.find(t => t.templateName === this.selectedTemplateName);
 
                     // Build the body based on the channel type
@@ -917,10 +925,11 @@
                 }
 
                 // Show final result summary
-                if (successCount > 0) {
+                if (successCount > 0 || this.stopRequested) {
+                    const stoppedMsg = this.stopRequested ? 'Campaign stopped manually. ' : '';
                     const msg = total > 1
-                        ? `Successfully sent to ${successCount} leads. ${failCount > 0 ? failCount + ' failed.' : ''}`
-                        : 'Message sent successfully.';
+                        ? `${stoppedMsg}Successfully sent to ${successCount} leads. ${failCount > 0 ? failCount + ' failed.' : ''}`
+                        : `${stoppedMsg}Message sent successfully.`;
 
                     if (window.showToast) {
                         window.showToast('Success', msg, 'success');

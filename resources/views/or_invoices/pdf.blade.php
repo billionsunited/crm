@@ -175,7 +175,7 @@
                 <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
                     <tr>
                         <td style="border: 1px solid #000; padding: 4px 0;" class="w-bold">Date of Invoice</td>
-                        <td style="border: 1px solid #000; padding: 4px 0;" class="w-normal">{{ $invoice->invoice_date->format('d-M-y') }}</td>
+                        <td style="border: 1px solid #000; padding: 4px 0;" class="w-normal">{{ $invoice->is_paid && $invoice->paid_at ? $invoice->paid_at->format('d-M-y') : $invoice->invoice_date->format('d-M-y') }}</td>
                     </tr>
                     <tr>
                         <td style="border: 1px solid #000; padding: 4px 0;" class="w-bold">Invoice Type</td>
@@ -223,7 +223,7 @@
                     <tr>
                         <td class="w-bold" style="padding: 4px 0;">Invoice Date</td>
                         <td style="padding: 4px 0;">:</td>
-                        <td class="w-normal" style="padding: 4px 0;">{{ $invoice->invoice_date->format('d-M-y') }}</td>
+                        <td class="w-normal" style="padding: 4px 0;">{{ $invoice->is_paid && $invoice->paid_at ? $invoice->paid_at->format('d-M-y') : $invoice->invoice_date->format('d-M-y') }}</td>
                     </tr>
                     <tr>
                         <td class="w-bold" style="padding: 4px 0;">State</td>
@@ -371,7 +371,7 @@
                 @endif
                 <div style="line-height: 1.2;">
                     <div class="w-bold uppercase" style="font-size: 9px;">Authorized Signatory</div>
-                    <div style="font-size: 9px;"><span class="w-bold">Date:</span> <span class="w-normal">{{ $invoice->invoice_date->format('d-M-y') }}</span></div>
+                    <div style="font-size: 9px;"><span class="w-bold">Date:</span> <span class="w-normal">{{ $invoice->is_paid && $invoice->paid_at ? $invoice->paid_at->format('d-M-y') : $invoice->invoice_date->format('d-M-y') }}</span></div>
                 </div>
             </td>
         </tr>

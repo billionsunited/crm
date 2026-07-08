@@ -53,7 +53,8 @@ class CampaignLeadController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('customer_name', 'like', "%{$search}%")
+                $q->where('id', 'like', "%{$search}%")
+                    ->orWhere('customer_name', 'like', "%{$search}%")
                     ->orWhere('mobile', 'like', "%{$search}%")
                     ->orWhere('mobile_1', 'like', "%{$search}%")
                     ->orWhere('mobile_2', 'like', "%{$search}%")
@@ -232,7 +233,8 @@ class CampaignLeadController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('customer_name', 'like', "%{$search}%")
+                $q->where('id', 'like', "%{$search}%")
+                    ->orWhere('customer_name', 'like', "%{$search}%")
                     ->orWhere('mobile', 'like', "%{$search}%")
                     ->orWhere('mobile_1', 'like', "%{$search}%")
                     ->orWhere('mobile_2', 'like', "%{$search}%")
@@ -613,7 +615,8 @@ class CampaignLeadController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('customer_name', 'like', "%{$search}%")
+                $q->where('id', 'like', "%{$search}%")
+                    ->orWhere('customer_name', 'like', "%{$search}%")
                     ->orWhere('mobile', 'like', "%{$search}%")
                     ->orWhere('mobile_1', 'like', "%{$search}%")
                     ->orWhere('mobile_2', 'like', "%{$search}%")
@@ -703,7 +706,8 @@ class CampaignLeadController extends Controller
                 if ($request->filled('search')) {
                     $search = $request->search;
                     $query->where(function ($q) use ($search) {
-                        $q->where('customer_name', 'like', "%{$search}%")
+                        $q->where('id', 'like', "%{$search}%")
+                            ->orWhere('customer_name', 'like', "%{$search}%")
                             ->orWhere('mobile', 'like', "%{$search}%")
                             ->orWhere('mobile_1', 'like', "%{$search}%")
                             ->orWhere('mobile_2', 'like', "%{$search}%")
@@ -818,8 +822,24 @@ class CampaignLeadController extends Controller
                     'theme' => $request->input('theme', 'default')
                 ])->render();
 
+                if ($template->attachment && \Illuminate\Support\Facades\Storage::disk('public')->exists($template->attachment)) {
+                    $diskPath = \Illuminate\Support\Facades\Storage::disk('public')->path($template->attachment);
+                    $fileName = basename($template->attachment);
+                    $parts = explode('---', $fileName, 2);
+                    $niceName = count($parts) === 2 ? $parts[1] : $fileName;
+                    $mail->addAttachment($diskPath, $niceName);
+                }
+
+                // Clear any existing stop flag
+                \Illuminate\Support\Facades\Cache::forget('stop_campaign_' . auth()->id());
+
                 $successCount = 0;
+                $stopped = false;
                 foreach ($emailList as $email) {
+                    if (\Illuminate\Support\Facades\Cache::pull('stop_campaign_' . auth()->id())) {
+                        $stopped = true;
+                        break;
+                    }
                     try {
                         $mail->addAddress($email);
                         $mail->send();
@@ -832,16 +852,19 @@ class CampaignLeadController extends Controller
 
                 $mail->smtpClose(); // Close the persistent SMTP connection
 
-                if ($successCount === 0) {
+                if ($successCount === 0 && !$stopped) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Failed to send campaign emails to any of the selected leads.'
                     ], 500);
                 }
 
+                $msg = $stopped ? "Campaign stopped. Sent successfully to {$successCount} of " . count($emailList) . " leads." 
+                                : "Campaign sent successfully to {$successCount} of " . count($emailList) . " leads.";
+
                 return response()->json([
                     'success' => true,
-                    'message' => "Campaign sent successfully to " . $successCount . " of " . count($emailList) . " leads."
+                    'message' => $msg
                 ]);
             } catch (\Exception $e) {
                 \Log::error("PHPMailer Setup/Error: " . $mail->ErrorInfo);

@@ -177,7 +177,7 @@
                 <div class="mb-4"><span class="w-bold">Address:</span> <span class="w-normal">#35, 1st Floor, 24th Main,
                         J.P.Nagar 7th Phase, Above Tyre Care Center, Bangalore-560078</span></div>
                 <div class="mb-4"><span class="w-bold">Date of Invoice:</span> <span
-                        class="w-normal">{{ $invoice->invoice_date->format('d-M-y') }}</span></div>
+                        class="w-normal">{{ $invoice->is_paid && $invoice->paid_at ? $invoice->paid_at->format('d-M-y') : $invoice->invoice_date->format('d-M-y') }}</span></div>
                 <div class="mb-1"><span class="w-bold">Invoice Type:</span> <span
                         class="w-bold uppercase">{{ $invoice->is_paid ? 'Tax Invoice' : ($invoice->is_cancelled ? 'CANCELLED' : 'PROFORMA') }}</span>
                 </div>
@@ -239,7 +239,7 @@
                     <tr>
                         <td class="w-bold">Invoice Date</td>
                         <td>:</td>
-                        <td class="w-normal">{{ $invoice->invoice_date->format('d-M-y') }}</td>
+                        <td class="w-normal">{{ $invoice->is_paid && $invoice->paid_at ? $invoice->paid_at->format('d-M-y') : $invoice->invoice_date->format('d-M-y') }}</td>
                     </tr>
                     <tr>
                         <td class="w-bold">PAN</td>
@@ -406,7 +406,7 @@
                     <div><span class="w-bold">Designation / Status:</span> <span class="w-normal">Proprietor</span>
                     </div>
                     <div><span class="w-bold">Date:</span> <span
-                            class="w-normal">{{ $invoice->invoice_date->format('d-M-y') }}</span></div>
+                            class="w-normal">{{ $invoice->is_paid && $invoice->paid_at ? $invoice->paid_at->format('d-M-y') : $invoice->invoice_date->format('d-M-y') }}</span></div>
                 </div>
             </td>
         </tr>

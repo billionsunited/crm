@@ -115,6 +115,48 @@
                                                     window.location.href = '{{ route('leads.export') }}?type=selected&ids=' + this.selectedLids.join(',');
                                                 }
                                             }" class="flex flex-col h-full transition duration-200">
+        <form action="{{ route('leads.index') }}" method="GET" id="filterForm" class="hidden"></form>
+
+        <!-- Top Dropdown Filters -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 mt-2">
+            <div>
+                <select name="lead_status" form="filterForm" onchange="document.getElementById('filterForm').submit()"
+                    class="block w-full h-12 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                    <option value="">Lead Status</option>
+                    <option value="Active" {{ request('lead_status') == 'Active' ? 'selected' : '' }}>Active</option>
+                    <option value="Non Active" {{ request('lead_status') == 'Non Active' ? 'selected' : '' }}>Non Active</option>
+                </select>
+            </div>
+
+            <div>
+                <select name="customer_type" form="filterForm" onchange="document.getElementById('filterForm').submit()"
+                    class="block w-full h-12 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                    <option value="">Lead Type</option>
+                    <option value="Enquiry" {{ request('customer_type') == 'Enquiry' ? 'selected' : '' }}>Enquiry</option>
+                    <option value="1st Time" {{ request('customer_type') == '1st Time' ? 'selected' : '' }}>1st Time</option>
+                    <option value="Loyal" {{ request('customer_type') == 'Loyal' ? 'selected' : '' }}>Loyal</option>
+                    <option value="Premium" {{ request('customer_type') == 'Premium' ? 'selected' : '' }}>Premium</option>
+                    <option value="Discount/Bargain Hunter" {{ request('customer_type') == 'Discount/Bargain Hunter' ? 'selected' : '' }}>Discount</option>
+                    <option value="Need Base" {{ request('customer_type') == 'Need Base' ? 'selected' : '' }}>Need Base</option>
+                    <option value="Unqualified" {{ request('customer_type') == 'Unqualified' ? 'selected' : '' }}>Unqualified</option>
+                </select>
+            </div>
+
+            <div>
+                <select name="industry" form="filterForm" onchange="document.getElementById('filterForm').submit()"
+                    class="block w-full h-12 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                    <option value="">Industry</option>
+                    <option value="PL" {{ request('industry') == 'PL' ? 'selected' : '' }}>PL</option>
+                    <option value="BL" {{ request('industry') == 'BL' ? 'selected' : '' }}>BL</option>
+                    <option value="HL" {{ request('industry') == 'HL' ? 'selected' : '' }}>HL</option>
+                    <option value="Real Estate" {{ request('industry') == 'Real Estate' ? 'selected' : '' }}>Real Estate</option>
+                    <option value="Education" {{ request('industry') == 'Education' ? 'selected' : '' }}>Education</option>
+                    <option value="NGO" {{ request('industry') == 'NGO' ? 'selected' : '' }}>NGO</option>
+                    <option value="Insurance" {{ request('industry') == 'Insurance' ? 'selected' : '' }}>Insurance</option>
+                </select>
+            </div>
+        </div>
+
         <!-- Page Header & Actions -->
         <div class="flex items-start justify-between gap-4 mb-6" style="flex-wrap: wrap;">
             <div>
@@ -287,7 +329,7 @@
 
         <!-- Filters -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6 mt-6">
-            <form action="{{ route('leads.index') }}" method="GET" class="flex flex-col gap-4 mt-2">
+            <div class="flex flex-col gap-4 mt-2">
 
                 <!-- Top Row: Search & Clear -->
                 <div class="flex w-full">
@@ -298,7 +340,7 @@
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
-                        <input type="text" name="search" value="{{ request('search') }}" onchange="this.form.submit()"
+                        <input type="text" name="search" form="filterForm" value="{{ request('search') }}" onchange="document.getElementById('filterForm').submit()"
                             class="block w-full h-12 pl-11 pr-4 bg-white border border-slate-300 rounded-l-lg border-r-0 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                             placeholder="Search...">
                     </div>
@@ -307,61 +349,10 @@
                         Clear
                     </a>
                     <!-- Hidden submit button to allow Enter key to work in text fields -->
-                    <button type="submit" class="hidden">Filter</button>
+                    <button type="submit" form="filterForm" class="hidden">Filter</button>
                 </div>
 
-                <!-- Bottom Row: 3 Dropdowns -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <select name="lead_status" onchange="this.form.submit()"
-                            class="block w-full h-12 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                            <option value="">Lead Status</option>
-                            <option value="Active" {{ request('lead_status') == 'Active' ? 'selected' : '' }}>Active
-                            </option>
-                            <option value="Non Active" {{ request('lead_status') == 'Non Active' ? 'selected' : '' }}>Non
-                                Active</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <select name="customer_type" onchange="this.form.submit()"
-                            class="block w-full h-12 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                            <option value="">Lead Type</option>
-                            <option value="Enquiry" {{ request('customer_type') == 'Enquiry' ? 'selected' : '' }}>Enquiry
-                            </option>
-                            <option value="1st Time" {{ request('customer_type') == '1st Time' ? 'selected' : '' }}>1st
-                                Time
-                            </option>
-                            <option value="Loyal" {{ request('customer_type') == 'Loyal' ? 'selected' : '' }}>Loyal
-                            </option>
-                            <option value="Premium" {{ request('customer_type') == 'Premium' ? 'selected' : '' }}>Premium
-                            </option>
-                            <option value="Discount/Bargain Hunter" {{ request('customer_type') == 'Discount/Bargain Hunter' ? 'selected' : '' }}>Discount</option>
-                            <option value="Need Base" {{ request('customer_type') == 'Need Base' ? 'selected' : '' }}>Need
-                                Base</option>
-                            <option value="Unqualified" {{ request('customer_type') == 'Unqualified' ? 'selected' : '' }}>
-                                Unqualified</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <select name="industry" onchange="this.form.submit()"
-                            class="block w-full h-12 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                            <option value="">Industry</option>
-                            <option value="PL" {{ request('industry') == 'PL' ? 'selected' : '' }}>PL</option>
-                            <option value="BL" {{ request('industry') == 'BL' ? 'selected' : '' }}>BL</option>
-                            <option value="HL" {{ request('industry') == 'HL' ? 'selected' : '' }}>HL</option>
-                            <option value="Real Estate" {{ request('industry') == 'Real Estate' ? 'selected' : '' }}>Real
-                                Estate</option>
-                            <option value="Education" {{ request('industry') == 'Education' ? 'selected' : '' }}>Education
-                            </option>
-                            <option value="NGO" {{ request('industry') == 'NGO' ? 'selected' : '' }}>NGO</option>
-                            <option value="Insurance" {{ request('industry') == 'Insurance' ? 'selected' : '' }}>Insurance
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
 
         <!-- Top Pagination & Scrollbar -->

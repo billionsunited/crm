@@ -112,6 +112,7 @@ class InvoiceController extends Controller
             'Invoice Number',
             'Date',
             'Paid Date',
+            'Paid Time',
             'Cancelled',
             'Client Name',
             'Organisation Name',
@@ -154,7 +155,8 @@ class InvoiceController extends Controller
                     $row = [
                         $invoice->invoice_number,
                         $invoice->invoice_date ? $invoice->invoice_date->format('Y-m-d') : '',
-                        $invoice->paid_at ? $invoice->paid_at->format('Y-m-d H:i:s') : '',
+                        $invoice->paid_at ? $invoice->paid_at->format('Y-m-d') : '',
+                        $invoice->paid_at ? $invoice->paid_at->format('H:i:s') : '',
                         $invoice->is_cancelled ? 'Yes' : 'No',
                         $invoice->client_name,
                         $invoice->organisation_name,

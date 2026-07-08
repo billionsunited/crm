@@ -160,8 +160,11 @@
                 <div class="w-full max-w-xs bg-slate-100 rounded-full h-3 mb-6 overflow-hidden border border-slate-200">
                     <div class="bg-indigo-600 h-full rounded-full transition-all duration-300" style="width: 100%; animation: pulse 2s infinite;"></div>
                 </div>
-                <h4 class="text-lg font-bold text-slate-900 mb-1">Sending Email Marketing</h4>
-                <p class="text-sm text-slate-500">Please wait while we process the emails...</p>
+                <h4 class="text-lg font-bold text-slate-900 mb-1" x-text="stopRequested ? 'Stopping Campaign...' : 'Sending Email Marketing'"></h4>
+                <p class="text-sm text-slate-500 mb-6" x-text="stopRequested ? 'Please wait while we halt the process...' : 'Please wait while we process the emails...'"></p>
+                <button type="button" @click="stopCampaign()" x-show="!stopRequested" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-bold transition-colors shadow-sm">
+                    Stop Campaign
+                </button>
             </div>
         </template>
     </div>
@@ -172,6 +175,7 @@
         Alpine.data('emailMessagingModal', () => ({
             isOpen: false,
             isSending: false,
+            stopRequested: false,
             selectedTemplateId: '',
             selectedTheme: 'default',
             bulkIds: [],
@@ -232,7 +236,8 @@
                     }
                     
                     if (result.success) {
-                        alert(result.message);
+                        const msg = this.stopRequested ? 'Campaign stopped manually. ' + result.message : result.message;
+                        alert(msg);
                         this.isOpen = false;
                         this.selectedTemplateId = '';
                         
@@ -248,6 +253,23 @@
                     alert('Email campaign error: ' + error.message);
                 } finally {
                     this.isSending = false;
+                    this.stopRequested = false;
+                }
+            },
+
+            async stopCampaign() {
+                this.stopRequested = true;
+                try {
+                    await fetch('{{ route("campaigns.stop") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    });
+                } catch (e) {
+                    console.error('Failed to send stop signal', e);
                 }
             }
         }));

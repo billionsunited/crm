@@ -24,7 +24,7 @@
         </div>
     @endif
 
-    <form action="{{ route('email-templates.update', $emailTemplate->id) }}" method="POST" class="space-y-6">
+    <form action="{{ route('email-templates.update', $emailTemplate->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
         @method('PUT')
         
@@ -55,6 +55,37 @@
                     <textarea id="body" name="body" rows="12"
                         class="w-full rounded-lg border-slate-200 text-sm focus:border-indigo-500 focus:ring-indigo-500 p-3 bg-white" 
                         placeholder="Type your email content here..." required>{{ old('body', $emailTemplate->body) }}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2" for="attachment">
+                        Attachment (Optional)
+                    </label>
+                    @if($emailTemplate->attachment)
+                        <div class="mb-3 p-3 bg-indigo-50 border border-indigo-100 rounded-lg flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-indigo-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                <span class="text-sm font-medium text-indigo-900">Current attachment exists</span>
+                            </div>
+                            <a href="{{ route('email-templates.attachment', $emailTemplate->id) }}" target="_blank" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                View File &rarr;
+                            </a>
+                        </div>
+                    @endif
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-lg bg-slate-50 hover:bg-slate-100 transition">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex justify-center text-sm text-slate-600">
+                                <label for="attachment" class="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                                    <span>Upload a new file</span>
+                                    <input id="attachment" name="attachment" type="file" class="sr-only">
+                                </label>
+                            </div>
+                            <p class="text-xs text-slate-500">Document or Image up to 15MB. Uploading will replace the current file.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

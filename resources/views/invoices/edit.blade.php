@@ -247,14 +247,20 @@
                                         class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">SERVICE
                                         NAME / DESCRIPTION</label>
                                     <select x-model="item.service_name" @change="handleServiceSelection(index)"
-                                        :name="'items['+index+'][service_name]'"
+                                        :name="item.service_name === 'Other' ? '' : 'items['+index+'][service_name]'"
                                         class="w-full rounded-lg border-slate-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 h-[42px]"
-                                        required>
+                                        :required="item.service_name !== 'Other'">
                                         <option value="" disabled>Select a service...</option>
                                         <template x-for="(rate, name) in serviceRates" :key="name">
                                             <option :value="name" x-text="name"></option>
                                         </template>
+                                        <option value="Other">Other</option>
                                     </select>
+                                    <input type="text" x-show="item.service_name === 'Other'" x-model="item.custom_name"
+                                        :name="item.service_name === 'Other' ? 'items['+index+'][service_name]' : ''"
+                                        class="w-full mt-2 rounded-lg border-slate-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 h-[42px]"
+                                        placeholder="Enter custom service name"
+                                        :required="item.service_name === 'Other'">
                                 </div>
                                 <div>
                                     <label
@@ -411,7 +417,11 @@
                     purchase_order: {!! json_encode($invoice->purchase_order) !!},
                 },
 
-                items: {!! $invoice->items->count() > 0 ? $invoice->items->map(function($i) { return ['service_name' => $i->service_name, 'custom_name' => '', 'hsn_sac' => $i->hsn_sac, 'qty' => $i->qty, 'rate' => $i->rate, 'total' => $i->total, 'calculatedMode' => 'auto']; })->toJson() : json_encode([['service_name' => $invoice->service_description_meta ?? '', 'custom_name' => '', 'hsn_sac' => '998599', 'qty' => '', 'rate' => '', 'total' => $invoice->taxable_value, 'calculatedMode' => 'auto']]) !!},
+                items: {!! $invoice->items->count() > 0 ? $invoice->items->map(function($i) { 
+                    $predefined = ['Marketing Services', 'SMS Campaign', 'RCS Campaign', 'Whatsapp Campaign'];
+                    $isOther = !in_array($i->service_name, $predefined);
+                    return ['service_name' => $isOther ? 'Other' : $i->service_name, 'custom_name' => $isOther ? $i->service_name : '', 'hsn_sac' => $i->hsn_sac, 'qty' => $i->qty, 'rate' => $i->rate, 'total' => $i->total, 'calculatedMode' => 'auto']; 
+                })->toJson() : json_encode([['service_name' => '', 'custom_name' => '', 'hsn_sac' => '998599', 'qty' => '', 'rate' => '', 'total' => $invoice->taxable_value, 'calculatedMode' => 'auto']]) !!},
 
                 handleLeadChange() {
                     const id = parseInt(this.selectedLeadId);
@@ -483,7 +493,7 @@
 
                 get serviceDescriptionMeta() {
                     const names = [...new Set(this.items
-                        .map(item => item.service_name)
+                        .map(item => item.service_name === 'Other' ? item.custom_name : item.service_name)
                         .filter(name => name))];
                     
                     if (names.length === 0) return 'Marketing Services';

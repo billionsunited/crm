@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EmailTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class EmailTemplateController extends Controller
 {
@@ -28,7 +29,17 @@ class EmailTemplateController extends Controller
             'name' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
             'body' => 'required|string',
+            'attachment' => 'nullable|file|max:15360', // 15MB max
         ]);
+
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $originalName = $file->getClientOriginalName();
+            // Prefix with random string to avoid collisions, separated by '---'
+            $fileName = \Illuminate\Support\Str::random(10) . '---' . preg_replace('/[^A-Za-z0-9.\-_]/', '_', $originalName);
+            $path = $file->storeAs('email_templates', $fileName, 'public');
+            $validated['attachment'] = $path;
+        }
 
         EmailTemplate::create($validated);
 
@@ -49,7 +60,19 @@ class EmailTemplateController extends Controller
             'name' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
             'body' => 'required|string',
+            'attachment' => 'nullable|file|max:15360', // 15MB max
         ]);
+
+        if ($request->hasFile('attachment')) {
+            if ($emailTemplate->attachment && Storage::disk('public')->exists($emailTemplate->attachment)) {
+                Storage::disk('public')->delete($emailTemplate->attachment);
+            }
+            $file = $request->file('attachment');
+            $originalName = $file->getClientOriginalName();
+            $fileName = \Illuminate\Support\Str::random(10) . '---' . preg_replace('/[^A-Za-z0-9.\-_]/', '_', $originalName);
+            $path = $file->storeAs('email_templates', $fileName, 'public');
+            $validated['attachment'] = $path;
+        }
 
         $emailTemplate->update($validated);
 
@@ -59,6 +82,11 @@ class EmailTemplateController extends Controller
     public function destroy(EmailTemplate $emailTemplate)
     {
         abort_if(!auth()->user()->can('email-template-delete'), 403);
+        
+        if ($emailTemplate->attachment && Storage::disk('public')->exists($emailTemplate->attachment)) {
+            Storage::disk('public')->delete($emailTemplate->attachment);
+        }
+        
         $emailTemplate->delete();
         return redirect()->route('email-templates.index')->with('success', 'Email template deleted successfully.');
     }
@@ -75,7 +103,31 @@ class EmailTemplateController extends Controller
             return back()->with('error', 'No email templates selected.');
         }
 
+        $templates = EmailTemplate::whereIn('id', $ids)->get();
+        foreach ($templates as $t) {
+            if ($t->attachment && Storage::disk('public')->exists($t->attachment)) {
+                Storage::disk('public')->delete($t->attachment);
+            }
+        }
+
         EmailTemplate::whereIn('id', $ids)->delete();
         return back()->with('success', count($ids) . ' email templates deleted successfully.');
+    }
+
+    public function viewAttachment(EmailTemplate $emailTemplate)
+    {
+        abort_if(!auth()->user()->can('email-template-view'), 403);
+        
+        if (!$emailTemplate->attachment || !Storage::disk('public')->exists($emailTemplate->attachment)) {
+            abort(404, 'Attachment not found.');
+        }
+        
+        $path = Storage::disk('public')->path($emailTemplate->attachment);
+        
+        $fileName = basename($emailTemplate->attachment);
+        $parts = explode('---', $fileName, 2);
+        $niceName = count($parts) === 2 ? $parts[1] : $fileName;
+        
+        return response()->download($path, $niceName);
     }
 }

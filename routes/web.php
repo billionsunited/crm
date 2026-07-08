@@ -68,6 +68,7 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('campaigns/stop', [\App\Http\Controllers\CampaignStopController::class, 'stop'])->name('campaigns.stop');
 
     Route::middleware('permission:dashboard-access')->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -177,6 +178,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:email-section')->post('or-invoices/{invoice}/send-email', [OrInvoiceController::class, 'sendEmail'])->name('or-invoices.send_email');
 
     // Email Templates
+    Route::get('email-templates/{emailTemplate}/attachment', [EmailTemplateController::class, 'viewAttachment'])->name('email-templates.attachment');
     Route::middleware('permission:email-template-delete')->post('email-templates/bulk-destroy', [EmailTemplateController::class, 'bulkDestroy'])->name('email-templates.bulk-destroy');
     Route::resource('email-templates', EmailTemplateController::class)->except(['show']);
     Route::post('leads/send-email', [LeadController::class, 'sendEmailCampaign'])->name('leads.send_email_campaign');
@@ -227,4 +229,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/office-timings', [\App\Http\Controllers\OfficeTimingController::class, 'index'])->name('office_timings.index');
         Route::post('/office-timings', [\App\Http\Controllers\OfficeTimingController::class, 'update'])->name('office_timings.update');
     });
+});
+
+// Temporary route to clear PDF cache
+Route::get('/clear-pdf-cache', function () {
+    \App\Models\Invoice::whereNotNull('pdf_file_path')->update(['pdf_file_path' => null]);
+    return "All paid invoice PDFs cleared! They will automatically regenerate with the new dates on the next download.";
+});
+
+// Temporary route to create storage link
+Route::get('/create-storage-link', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        return "Storage link created successfully! You should now be able to view attachments.";
+    } catch (\Exception $e) {
+        return "Error creating storage link: " . $e->getMessage();
+    }
 });
