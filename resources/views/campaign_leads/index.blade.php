@@ -520,10 +520,10 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4 min-w-[150px] max-w-[200px] whitespace-normal break-words">
                                         <div class="text-sm font-bold text-slate-900">{{ $lead->customer_name ?? 'N/A' }}
                                         </div>
-                                        <div class="text-xs text-slate-500">
+                                        <div class="text-xs text-slate-500 truncate" title="{{ $lead->email_id ?? 'No Email' }}">
                                             @can('enquiry-vendor-contact-view')
                                                 {{ $lead->email_id ?? 'No Email' }}
                                             @else
