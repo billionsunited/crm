@@ -202,11 +202,11 @@
                 <div class="mb-4"><span class="w-bold">Address:</span> <span
                         class="w-normal">{{ $invoice->address }}</span></div>
                 <div class="mb-4"><span class="w-bold">State & Code:</span> <span
-                        class="w-normal">{{ $invoice->customer->state_name ?: ($invoice->state ?: 'Karnataka') }} ({{ $invoice->customer->state_code ?: ($invoice->state_code ?: '29') }})</span></div>
+                        class="w-normal">{{ $invoice->customer?->state_name ?: ($invoice->state ?: 'Karnataka') }} ({{ $invoice->customer?->state_code ?: ($invoice->state_code ?: '29') }})</span></div>
                 <div class="mb-1"><span class="w-bold">Mobile No:</span> <span
-                        class="w-normal">{{ $invoice->customer->mobile_no ?? 'NONE' }}</span></div>
+                        class="w-normal">{{ $invoice->customer?->mobile_no ?? 'NONE' }}</span></div>
                 <div class="mb-1"><span class="w-bold">Email Id:</span> <span
-                        class="w-normal">{{ $invoice->customer->email_id ?? 'NONE' }}</span></div>
+                        class="w-normal">{{ $invoice->customer?->email_id ?? 'NONE' }}</span></div>
                 <div class="mt-1"><span class="w-bold">Aadhar No: </span> <span
                         class="w-normal uppercase">{{ $invoice->aadhar_no ?? 'NONE' }}</span>
                 </div>

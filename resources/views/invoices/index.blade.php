@@ -17,7 +17,7 @@
                     </svg>
                     <span>Export Invoices</span>
                 </button>
-                <button type="button" @click="zipModalOpen = true" class="btn bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors shadow-sm cursor-pointer">
+                <button type="button" @click="zipModalOpen = true" class="btn bg-slate-800 hover:bg-slate-900 text-white flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors shadow-sm cursor-pointer">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
@@ -376,7 +376,7 @@
                 <!-- Modal Header -->
                 <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
                     <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                         </svg>
                         Download PDF Invoices (ZIP)
@@ -425,7 +425,7 @@
                         <button type="button" @click="zipModalOpen = false" class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
                             Cancel
                         </button>
-                        <button type="submit" class="px-6 py-2.5 text-sm font-bold text-white bg-amber-600 hover:bg-amber-700 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-all shadow-md shadow-amber-100 flex items-center gap-2">
+                        <button type="submit" class="px-6 py-2.5 text-sm font-bold text-white bg-slate-800 hover:bg-slate-900 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-all shadow-md shadow-slate-200 flex items-center gap-2">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                             </svg>
