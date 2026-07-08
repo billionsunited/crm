@@ -196,14 +196,13 @@ class InvoiceController extends Controller
 
         $invoices = Invoice::with(['items', 'customer', 'lead'])
             ->where('invoice_per_type', 'standard')
-            ->where('is_paid', true)
-            ->whereYear('paid_at', $year)
-            ->whereMonth('paid_at', $month)
-            ->orderBy('paid_at', 'asc')
+            ->whereYear('invoice_date', $year)
+            ->whereMonth('invoice_date', $month)
+            ->orderBy('invoice_date', 'asc')
             ->get();
 
         if ($invoices->isEmpty()) {
-            return back()->with('error', 'No paid invoices found for the selected month and year.');
+            return back()->with('error', 'No invoices found for the selected month and year.');
         }
 
         $monthName = date('F', mktime(0, 0, 0, $month, 10));
@@ -215,12 +214,13 @@ class InvoiceController extends Controller
             foreach ($invoices as $invoice) {
                 $companyName = $invoice->customer?->company_name ?? $invoice->lead?->company_name ?? null;
                 $companyName = ($companyName && strtoupper($companyName) !== 'NONE') ? $companyName : null;
-                $invoiceNumber = $invoice->invoice_number;
+                $invoiceNumber = ($invoice->is_paid || $invoice->is_cancelled) ? $invoice->invoice_number : 'PROFORMA';
                 $clientName = $invoice->client_name;
                 $leadId = $invoice->lead?->record_id ?? $invoice->lead_id;
-                $dateStr = $invoice->paid_at ? $invoice->paid_at->format('d-m-Y') : date('d-m-Y');
+                $dateStr = $invoice->invoice_date ? $invoice->invoice_date->format('d-m-Y') : date('d-m-Y');
                 
-                $parts = array_filter(['Tax Invoice', $invoiceNumber, $clientName, $companyName, $leadId, $dateStr]);
+                $invoiceType = $invoice->is_paid ? 'Tax Invoice' : ($invoice->is_cancelled ? 'Cancelled Invoice' : 'Proforma Invoice');
+                $parts = array_filter([$invoiceType, $invoiceNumber, $clientName, $companyName, $leadId, $dateStr]);
                 $downloadName = implode(' - ', $parts) . '.pdf';
                 $downloadName = str_replace(['/', '\\'], '-', $downloadName);
 
