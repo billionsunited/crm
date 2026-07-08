@@ -68,6 +68,7 @@ class InvoiceService
 
         $customerEmail = $invoice->customer?->email_id ?? $invoice->lead?->email_id;
         $alternateEmail = $invoice->lead?->alternate_email_id;
+        $alternateEmail2 = $invoice->lead?->alternate_email_id_2;
 
         //$adminEmail = config('mail.from.address');
 
@@ -127,6 +128,9 @@ class InvoiceService
 
             if ($alternateEmail) {
                 $clientMail->addCC($alternateEmail);
+            }
+            if ($alternateEmail2) {
+                $clientMail->addCC($alternateEmail2);
             }
             //$clientMail->addCC('vir.vijay@rupeeq.com');
 

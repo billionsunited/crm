@@ -135,7 +135,7 @@
             </svg>
             Contact Info
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
                 <label for="alternate_mobile" class="block text-sm font-medium text-slate-700 mb-1">Alternate
                     Mobile</label>
@@ -149,6 +149,18 @@
                 @endcan
             </div>
             <div>
+                <label for="alternate_mobile_2" class="block text-sm font-medium text-slate-700 mb-1">Alternate
+                    Mobile 2</label>
+                @can('lead-contact-view')
+                    <input type="text" name="alternate_mobile_2" id="alternate_mobile_2"
+                        value="{{ old('alternate_mobile_2', $lead->alternate_mobile_2 ?? '') }}"
+                        class="w-full h-11 px-4 rounded-lg border-slate-300 focus:border-indigo-500 shadow-sm">
+                @else
+                    <input type="hidden" name="alternate_mobile_2" value="{{ old('alternate_mobile_2', $lead->alternate_mobile_2 ?? '') }}">
+                    <input type="text" disabled value="********" class="w-full h-11 px-4 rounded-lg border-slate-300 bg-slate-100 text-slate-500 shadow-sm cursor-not-allowed">
+                @endcan
+            </div>
+            <div>
                 <label for="alternate_email_id" class="block text-sm font-medium text-slate-700 mb-1">Alternate
                     Email</label>
                 @can('lead-contact-view')
@@ -157,6 +169,18 @@
                         class="w-full h-11 px-4 rounded-lg border-slate-300 focus:border-indigo-500 shadow-sm">
                 @else
                     <input type="hidden" name="alternate_email_id" value="{{ old('alternate_email_id', $lead->alternate_email_id ?? '') }}">
+                    <input type="text" disabled value="********" class="w-full h-11 px-4 rounded-lg border-slate-300 bg-slate-100 text-slate-500 shadow-sm cursor-not-allowed">
+                @endcan
+            </div>
+            <div>
+                <label for="alternate_email_id_2" class="block text-sm font-medium text-slate-700 mb-1">Alternate
+                    Email 2</label>
+                @can('lead-contact-view')
+                    <input type="email" name="alternate_email_id_2" id="alternate_email_id_2"
+                        value="{{ old('alternate_email_id_2', $lead->alternate_email_id_2 ?? '') }}"
+                        class="w-full h-11 px-4 rounded-lg border-slate-300 focus:border-indigo-500 shadow-sm">
+                @else
+                    <input type="hidden" name="alternate_email_id_2" value="{{ old('alternate_email_id_2', $lead->alternate_email_id_2 ?? '') }}">
                     <input type="text" disabled value="********" class="w-full h-11 px-4 rounded-lg border-slate-300 bg-slate-100 text-slate-500 shadow-sm cursor-not-allowed">
                 @endcan
             </div>

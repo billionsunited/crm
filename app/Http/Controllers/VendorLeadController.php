@@ -21,6 +21,8 @@ class VendorLeadController extends Controller
                     ->orWhere('mobile', 'like', "%{$search}%")
                     ->orWhere('email_id', 'like', "%{$search}%")
                     ->orWhere('alternate_email_id', 'like', "%{$search}%")
+                    ->orWhere('alternate_mobile_2', 'like', "%{$search}%")
+                    ->orWhere('alternate_email_id_2', 'like', "%{$search}%")
                     ->orWhere('record_id', 'like', "%{$search}%")
                     ->orWhere('company_name', 'like', "%{$search}%")
                     ->orWhere('aadhar_no', 'like', "%{$search}%");
@@ -85,6 +87,8 @@ class VendorLeadController extends Controller
                     ->orWhere('mobile', 'like', "%{$search}%")
                     ->orWhere('email_id', 'like', "%{$search}%")
                     ->orWhere('alternate_email_id', 'like', "%{$search}%")
+                    ->orWhere('alternate_mobile_2', 'like', "%{$search}%")
+                    ->orWhere('alternate_email_id_2', 'like', "%{$search}%")
                     ->orWhere('record_id', 'like', "%{$search}%")
                     ->orWhere('company_name', 'like', "%{$search}%")
                     ->orWhere('aadhar_no', 'like', "%{$search}%");
@@ -215,6 +219,8 @@ class VendorLeadController extends Controller
                     $q1->whereNotNull('mobile')->where('mobile', '!=', '');
                 })->orWhere(function ($q2) {
                     $q2->whereNotNull('alternate_mobile')->where('alternate_mobile', '!=', '');
+                })->orWhere(function ($q3) {
+                    $q3->whereNotNull('alternate_mobile_2')->where('alternate_mobile_2', '!=', '');
                 });
             })
             ->get();
@@ -239,6 +245,8 @@ class VendorLeadController extends Controller
                     $q1->whereNotNull('mobile')->where('mobile', '!=', '');
                 })->orWhere(function ($q2) {
                     $q2->whereNotNull('alternate_mobile')->where('alternate_mobile', '!=', '');
+                })->orWhere(function ($q3) {
+                    $q3->whereNotNull('alternate_mobile_2')->where('alternate_mobile_2', '!=', '');
                 });
             });
 
@@ -250,6 +258,8 @@ class VendorLeadController extends Controller
                     ->orWhere('mobile', 'like', "%{$search}%")
                     ->orWhere('email_id', 'like', "%{$search}%")
                     ->orWhere('alternate_email_id', 'like', "%{$search}%")
+                    ->orWhere('alternate_mobile_2', 'like', "%{$search}%")
+                    ->orWhere('alternate_email_id_2', 'like', "%{$search}%")
                     ->orWhere('record_id', 'like', "%{$search}%")
                     ->orWhere('company_name', 'like', "%{$search}%")
                     ->orWhere('aadhar_no', 'like', "%{$search}%");
@@ -316,13 +326,15 @@ class VendorLeadController extends Controller
             : ['VENDOR PO API', 'VENDOR P.O (ADMIN)'];
 
         try {
-            $query = Lead::select('id', 'customer_name', 'email_id', 'alternate_email_id')
+            $query = Lead::select('id', 'customer_name', 'email_id', 'alternate_email_id', 'alternate_email_id_2')
                 ->whereIn('creation_source', $sources)
                 ->where(function($q) {
                     $q->where(function($q1) {
                         $q1->whereNotNull('email_id')->where('email_id', '!=', '');
                     })->orWhere(function($q2) {
                         $q2->whereNotNull('alternate_email_id')->where('alternate_email_id', '!=', '');
+                    })->orWhere(function($q3) {
+                        $q3->whereNotNull('alternate_email_id_2')->where('alternate_email_id_2', '!=', '');
                     });
                 });
 
@@ -335,6 +347,8 @@ class VendorLeadController extends Controller
                             ->orWhere('mobile', 'like', "%{$search}%")
                             ->orWhere('email_id', 'like', "%{$search}%")
                             ->orWhere('alternate_email_id', 'like', "%{$search}%")
+                            ->orWhere('alternate_mobile_2', 'like', "%{$search}%")
+                            ->orWhere('alternate_email_id_2', 'like', "%{$search}%")
                             ->orWhere('record_id', 'like', "%{$search}%")
                             ->orWhere('company_name', 'like', "%{$search}%")
                             ->orWhere('aadhar_no', 'like', "%{$search}%");
@@ -394,6 +408,9 @@ class VendorLeadController extends Controller
                 }
                 if (!empty($lead->alternate_email_id)) {
                     $emailList[] = trim($lead->alternate_email_id);
+                }
+                if (!empty($lead->alternate_email_id_2)) {
+                    $emailList[] = trim($lead->alternate_email_id_2);
                 }
             }
             // Remove duplicates across all gathered emails

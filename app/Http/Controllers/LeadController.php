@@ -82,6 +82,9 @@ class LeadController extends Controller
             if ($lead->alternate_email_id) {
                 $mail->addCC($lead->alternate_email_id);
             }
+            if ($lead->alternate_email_id_2) {
+                $mail->addCC($lead->alternate_email_id_2);
+            }
 
             $mail->addBCC('salesteam@billionsunited.com');
             $mail->addBCC('sales@billionsunited.com');
@@ -197,6 +200,9 @@ class LeadController extends Controller
 
             if ($lead->alternate_email_id) {
                 $mail->addCC($lead->alternate_email_id);
+            }
+            if ($lead->alternate_email_id_2) {
+                $mail->addCC($lead->alternate_email_id_2);
             }
 
             $mail->addBCC('salesteam@billionsunited.com');
@@ -337,6 +343,8 @@ class LeadController extends Controller
                     ->orWhere('alternate_mobile', 'like', "%{$search}%")
                     ->orWhere('email_id', 'like', "%{$search}%")
                     ->orWhere('alternate_email_id', 'like', "%{$search}%")
+                    ->orWhere('alternate_mobile_2', 'like', "%{$search}%")
+                    ->orWhere('alternate_email_id_2', 'like', "%{$search}%")
                     ->orWhere('record_id', 'like', "%{$search}%")
                     ->orWhere('company_name', 'like', "%{$search}%")
                     ->orWhere('reference', 'like', "%{$search}%")
@@ -410,6 +418,8 @@ class LeadController extends Controller
                         ->orWhere('alternate_mobile', 'like', "%{$search}%")
                         ->orWhere('email_id', 'like', "%{$search}%")
                         ->orWhere('alternate_email_id', 'like', "%{$search}%")
+                        ->orWhere('alternate_mobile_2', 'like', "%{$search}%")
+                        ->orWhere('alternate_email_id_2', 'like', "%{$search}%")
                         ->orWhere('record_id', 'like', "%{$search}%")
                         ->orWhere('reference', 'like', "%{$search}%")
                         ->orWhere('company_name', 'like', "%{$search}%");
@@ -483,7 +493,9 @@ class LeadController extends Controller
                         'Records Owner' => $lead->records_owner,
                         'Reference' => $lead->reference,
                         'Alternate Mobile' => $lead->alternate_mobile,
+                        'Alternate Mobile 2' => $lead->alternate_mobile_2,
                         'Alternate Email Id' => $lead->alternate_email_id,
+                        'Alternate Email Id 2' => $lead->alternate_email_id_2,
                         'Designation' => $lead->designation,
                         'GST No' => $lead->gst_no,
                         'PAN Number' => $lead->pan_number,
@@ -719,8 +731,10 @@ class LeadController extends Controller
                         'reference' => trim((string) ($row['reference'] ?? '')) ?: null,
                         'mobile' => $mobile !== '' ? $mobile : null,
                         'alternate_mobile' => trim((string) ($row['alternate_mobile'] ?? '')) ?: null,
+                        'alternate_mobile_2' => trim((string) ($row['alternate_mobile_2'] ?? '')) ?: null,
                         'email_id' => $email !== '' ? $email : null,
                         'alternate_email_id' => trim((string) ($row['alternate_email_id'] ?? '')) ?: null,
+                        'alternate_email_id_2' => trim((string) ($row['alternate_email_id_2'] ?? '')) ?: null,
                         'designation' => trim((string) ($row['designation'] ?? '')) ?: null,
                         'city' => trim((string) ($row['city'] ?? '')) ?: null,
                         'nature_of_industry' => trim((string) ($row['nature_of_industry'] ?? '')) ?: null,
@@ -1025,12 +1039,14 @@ class LeadController extends Controller
         $template = \App\Models\EmailTemplate::findOrFail($request->template_id);
 
         try {
-            $query = Lead::select('id', 'customer_name', 'email_id', 'alternate_email_id')
+            $query = Lead::select('id', 'customer_name', 'email_id', 'alternate_email_id', 'alternate_email_id_2')
                 ->where(function($q) {
                     $q->where(function($q1) {
                         $q1->whereNotNull('email_id')->where('email_id', '!=', '');
                     })->orWhere(function($q2) {
                         $q2->whereNotNull('alternate_email_id')->where('alternate_email_id', '!=', '');
+                    })->orWhere(function($q3) {
+                        $q3->whereNotNull('alternate_email_id_2')->where('alternate_email_id_2', '!=', '');
                     });
                 });
 
@@ -1044,6 +1060,8 @@ class LeadController extends Controller
                             ->orWhere('alternate_mobile', 'like', "%{$search}%")
                             ->orWhere('email_id', 'like', "%{$search}%")
                             ->orWhere('alternate_email_id', 'like', "%{$search}%")
+                            ->orWhere('alternate_mobile_2', 'like', "%{$search}%")
+                            ->orWhere('alternate_email_id_2', 'like', "%{$search}%")
                             ->orWhere('record_id', 'like', "%{$search}%")
                             ->orWhere('company_name', 'like', "%{$search}%");
                     });
@@ -1083,6 +1101,9 @@ class LeadController extends Controller
                 }
                 if (!empty($lead->alternate_email_id)) {
                     $emailList[] = trim($lead->alternate_email_id);
+                }
+                if (!empty($lead->alternate_email_id_2)) {
+                    $emailList[] = trim($lead->alternate_email_id_2);
                 }
             }
             // Remove duplicates across all gathered emails

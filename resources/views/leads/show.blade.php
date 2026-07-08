@@ -333,10 +333,30 @@
                         </span>
                     </div>
                     <div>
+                        <span class="block text-sm font-medium text-slate-500">Alternate Mobile 2</span>
+                        <span class="block text-base text-slate-900 mt-1">
+                            @can($contactPermission)
+                                {{ $lead->alternate_mobile_2 ?: '-' }}
+                            @else
+                                ********
+                            @endcan
+                        </span>
+                    </div>
+                    <div>
                         <span class="block text-sm font-medium text-slate-500">Alternate Email</span>
                         <span class="block text-base text-slate-900 mt-1 break-all">
                             @can($contactPermission)
                                 {{ $lead->alternate_email_id ?: '-' }}
+                            @else
+                                ********
+                            @endcan
+                        </span>
+                    </div>
+                    <div>
+                        <span class="block text-sm font-medium text-slate-500">Alternate Email 2</span>
+                        <span class="block text-base text-slate-900 mt-1 break-all">
+                            @can($contactPermission)
+                                {{ $lead->alternate_email_id_2 ?: '-' }}
                             @else
                                 ********
                             @endcan

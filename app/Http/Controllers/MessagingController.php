@@ -48,7 +48,7 @@ class MessagingController extends Controller
         $headerImage = $request->header_image;
 
         $lead = Lead::findOrFail($leadId);
-        $mobiles = array_filter([$lead->mobile, $lead->alternate_mobile]);
+        $mobiles = array_filter([$lead->mobile, $lead->alternate_mobile, $lead->alternate_mobile_2]);
         
         $successCount = 0;
         $failCount = 0;
@@ -131,7 +131,7 @@ class MessagingController extends Controller
 
         $leadId = $request->lead_id;
         $lead = Lead::findOrFail($leadId);
-        $mobiles = array_filter([$lead->mobile, $lead->alternate_mobile]);
+        $mobiles = array_filter([$lead->mobile, $lead->alternate_mobile, $lead->alternate_mobile_2]);
 
         $successCount = 0;
         $failCount = 0;
@@ -204,7 +204,7 @@ class MessagingController extends Controller
         if ($leadId) {
             $lead = Lead::find($leadId);
             if ($lead) {
-                $mobiles = array_filter([$lead->mobile, $lead->alternate_mobile]);
+                $mobiles = array_filter([$lead->mobile, $lead->alternate_mobile, $lead->alternate_mobile_2]);
             }
         }
         
@@ -265,6 +265,8 @@ class MessagingController extends Controller
                     $q1->whereNotNull('mobile')->where('mobile', '!=', '');
                 })->orWhere(function ($q2) {
                     $q2->whereNotNull('alternate_mobile')->where('alternate_mobile', '!=', '');
+                })->orWhere(function ($q3) {
+                    $q3->whereNotNull('alternate_mobile_2')->where('alternate_mobile_2', '!=', '');
                 });
             })
             ->get();
@@ -288,6 +290,8 @@ class MessagingController extends Controller
                     $q1->whereNotNull('mobile')->where('mobile', '!=', '');
                 })->orWhere(function ($q2) {
                     $q2->whereNotNull('alternate_mobile')->where('alternate_mobile', '!=', '');
+                })->orWhere(function ($q3) {
+                    $q3->whereNotNull('alternate_mobile_2')->where('alternate_mobile_2', '!=', '');
                 });
             });
 

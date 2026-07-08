@@ -37,7 +37,9 @@ class UpdateLeadRequest extends FormRequest
 
             // Contact Info
             'alternate_mobile' => 'nullable|string|max:20',
+            'alternate_mobile_2' => 'nullable|string|max:20',
             'alternate_email_id' => 'nullable|email|max:255',
+            'alternate_email_id_2' => 'nullable|email|max:255',
             'designation' => 'nullable|string|max:255',
 
             // Company Info
