@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('header', 'Invoices')
 @section('content')
-    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="{ exportModalOpen: false }">
+    <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto" x-data="{ exportModalOpen: false, zipModalOpen: false }">
         <!-- Page Header -->
         <div class="sm:flex sm:justify-between sm:items-center mb-8">
             <div class="mb-4 sm:mb-0">
@@ -16,6 +16,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     <span>Export Invoices</span>
+                </button>
+                <button type="button" @click="zipModalOpen = true" class="btn bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors shadow-sm cursor-pointer">
+                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span>Download ZIP</span>
                 </button>
                 @endcan
                 <a href="{{ route('invoices.create') }}" class="btn bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors shadow-sm">
@@ -344,6 +350,86 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                             </svg>
                             Export
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Download ZIP Modal -->
+        <div x-show="zipModalOpen" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6" style="display: none;" x-cloak>
+            <!-- Backdrop -->
+            <div x-show="zipModalOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" @click="zipModalOpen = false"></div>
+
+            <!-- Modal box -->
+            <div x-show="zipModalOpen" x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+                class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 z-10 flex flex-col">
+                
+                <!-- Modal Header -->
+                <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Download PDF Invoices (ZIP)
+                    </h3>
+                    <button @click="zipModalOpen = false" class="text-slate-400 hover:text-slate-600 transition-colors p-2 rounded-full hover:bg-slate-50">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Form -->
+                <form action="{{ route('invoices.download_zip') }}" method="GET" @submit="zipModalOpen = false">
+                    <div class="px-6 py-6 space-y-4">
+                        <p class="text-sm text-slate-600">Select the month and year of the invoices you wish to download as PDFs compressed in a ZIP file.</p>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Month Select -->
+                            <div>
+                                <label for="zip_month" class="block text-xs font-bold text-slate-700 uppercase mb-2">Month</label>
+                                <select name="month" id="zip_month" class="block w-full h-11 px-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm text-sm">
+                                    @for ($m = 1; $m <= 12; $m++)
+                                        <option value="{{ $m }}" {{ date('n') == $m ? 'selected' : '' }}>
+                                            {{ date('F', mktime(0, 0, 0, $m, 10)) }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
+
+                            <!-- Year Select -->
+                            <div>
+                                <label for="zip_year" class="block text-xs font-bold text-slate-700 uppercase mb-2">Year</label>
+                                <select name="year" id="zip_year" class="block w-full h-11 px-3 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm text-sm">
+                                    @for ($y = date('Y'); $y >= date('Y') - 5; $y--)
+                                        <option value="{{ $y }}" {{ date('Y') == $y ? 'selected' : '' }}>
+                                            {{ $y }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                        <button type="button" @click="zipModalOpen = false" class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 text-sm font-bold text-white bg-amber-600 hover:bg-amber-700 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-all shadow-md shadow-amber-100 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            Download
                         </button>
                     </div>
                 </form>

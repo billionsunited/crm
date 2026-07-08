@@ -152,6 +152,7 @@ Route::middleware('auth')->group(function () {
 
     // Invoices with permission checks
     Route::middleware('permission:invoice-export')->get('invoices-export', [InvoiceController::class, 'export'])->name('invoices.export');
+    Route::middleware('permission:invoice-export')->get('invoices-zip', [InvoiceController::class, 'downloadZip'])->name('invoices.download_zip');
 
     Route::middleware('permission:invoice-section')->group(function () {
         Route::resource('invoices', InvoiceController::class);
