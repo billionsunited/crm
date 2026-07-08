@@ -87,6 +87,19 @@ class CampaignLeadController extends Controller
                 })->whereNotIn('campaign_leads.mobile_2', function($sub) {
                     $sub->select('mobile')->from('leads')->whereNotNull('mobile')->where('mobile', '!=', '');
                 });
+            } elseif ($request->duplicate === 'enquiry_duplicate') {
+                $query->whereExists(function($sub) {
+                    $sub->select(DB::raw(1))
+                        ->from('campaign_leads as cl2')
+                        ->where(function($q) {
+                            $q->whereColumn('cl2.mobile', 'campaign_leads.mobile')
+                              ->orWhereColumn('cl2.mobile', 'campaign_leads.mobile_1')
+                              ->orWhereColumn('cl2.mobile', 'campaign_leads.mobile_2');
+                        })
+                        ->whereNotNull('cl2.mobile')
+                        ->where('cl2.mobile', '!=', '')
+                        ->whereColumn('cl2.id', '<', 'campaign_leads.id');
+                });
             }
         }
 
@@ -265,6 +278,19 @@ class CampaignLeadController extends Controller
                         })
                         ->whereNotNull('leads.mobile')
                         ->where('leads.mobile', '!=', '');
+                });
+            } elseif ($request->duplicate === 'enquiry_duplicate') {
+                $query->whereExists(function($sub) {
+                    $sub->select(DB::raw(1))
+                        ->from('campaign_leads as cl2')
+                        ->where(function($q) {
+                            $q->whereColumn('cl2.mobile', 'campaign_leads.mobile')
+                              ->orWhereColumn('cl2.mobile', 'campaign_leads.mobile_1')
+                              ->orWhereColumn('cl2.mobile', 'campaign_leads.mobile_2');
+                        })
+                        ->whereNotNull('cl2.mobile')
+                        ->where('cl2.mobile', '!=', '')
+                        ->whereColumn('cl2.id', '<', 'campaign_leads.id');
                 });
             }
         }
@@ -715,6 +741,19 @@ class CampaignLeadController extends Controller
                                 })
                                 ->whereNotNull('leads.mobile')
                                 ->where('leads.mobile', '!=', '');
+                        });
+                    } elseif ($request->duplicate === 'enquiry_duplicate') {
+                        $query->whereExists(function($sub) {
+                            $sub->select(DB::raw(1))
+                                ->from('campaign_leads as cl2')
+                                ->where(function($q) {
+                                    $q->whereColumn('cl2.mobile', 'campaign_leads.mobile')
+                                      ->orWhereColumn('cl2.mobile', 'campaign_leads.mobile_1')
+                                      ->orWhereColumn('cl2.mobile', 'campaign_leads.mobile_2');
+                                })
+                                ->whereNotNull('cl2.mobile')
+                                ->where('cl2.mobile', '!=', '')
+                                ->whereColumn('cl2.id', '<', 'campaign_leads.id');
                         });
                     }
                 }

@@ -356,6 +356,7 @@
                             <option value="">All Leads</option>
                             <option value="converted" {{ request('duplicate') == 'converted' ? 'selected' : '' }}>Converted to CRM Lead</option>
                             <option value="not_converted" {{ request('duplicate') == 'not_converted' ? 'selected' : '' }}>Not Converted</option>
+                            <option value="enquiry_duplicate" {{ request('duplicate') == 'enquiry_duplicate' ? 'selected' : '' }}>Enquiry Duplicate</option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
