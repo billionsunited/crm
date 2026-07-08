@@ -132,6 +132,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:campaign-delete')->group(function () {
         Route::delete('campaign-leads/{campaignLead}', [CampaignLeadController::class, 'destroy'])->name('campaign-leads.destroy');
         Route::post('campaign-leads/bulk-destroy', [CampaignLeadController::class, 'bulkDestroy'])->name('campaign-leads.bulk-destroy');
+        Route::post('campaign-leads/delete-all', [CampaignLeadController::class, 'deleteAll'])->name('campaign-leads.delete-all');
     });
     
     Route::middleware('permission:campaign-send')->group(function () {

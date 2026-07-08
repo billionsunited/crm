@@ -25,26 +25,27 @@ class ManagePoController extends Controller
       Lead::SOURCE_GROUPS['CRM']
     );
 
-    $leads = Customer::whereHas('leads', function ($q) use ($targetSources) {
-      $q->whereIn('creation_source', $targetSources);
-    })->with([
-          'leads' => function ($q) use ($targetSources) {
-            $q->whereIn('creation_source', $targetSources)->latest();
-          }
-        ])->orderBy('company_name')->get()->map(function ($customer) {
-          $lead = $customer->leads->first();
-          return [
-            'id' => $lead->id,
-            'record_id' => $lead->record_id,
-            'client_name' => $customer->client_name ?? 'None',
-            'organisation_name' => $customer->company_name ?? 'None',
-            'address' => $customer->registered_address ?? 'None',
-            'city' => $customer->place ?? 'None',
-            'email_id' => $customer->email_id ?? 'None',
-            'signature_path' => $customer->signature_path ? 'https://billionsunited.com/generated_sow/signatures/' . basename($customer->signature_path) : null,
-            'customer_id' => $customer->id,
-          ];
-        });
+    $leads = Lead::whereIn('creation_source', $targetSources)
+      ->whereNotNull('customer_id')
+      ->leftJoin('customers', 'leads.customer_id', '=', 'customers.id')
+      ->select('leads.*')
+      ->orderByRaw('COALESCE(customers.company_name, leads.company_name) ASC')
+      ->with('customer')
+      ->get()
+      ->map(function ($lead) {
+        $customer = $lead->customer;
+        return [
+          'id' => $lead->id,
+          'record_id' => $lead->record_id,
+          'client_name' => $customer?->client_name ?? $lead->customer_name ?? 'None',
+          'organisation_name' => $customer?->company_name ?? $lead->company_name ?? 'None',
+          'address' => $customer?->registered_address ?? $lead->company_address ?? 'None',
+          'city' => $customer?->place ?? $lead->city ?? 'None',
+          'email_id' => $customer?->email_id ?? $lead->email_id ?? 'None',
+          'signature_path' => $customer?->signature_path ? 'https://billionsunited.com/generated_sow/signatures/' . basename($customer->signature_path) : null,
+          'customer_id' => $customer?->id,
+        ];
+      });
 
     return view('manage-po.client-po', compact('leads'));
   }

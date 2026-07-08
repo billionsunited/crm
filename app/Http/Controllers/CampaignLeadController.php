@@ -26,7 +26,11 @@ class CampaignLeadController extends Controller
         $query = CampaignLead::query()
             ->addSelect([
                 'original_id' => DB::table('campaign_leads as cl2')->select('cl2.id')
-                    ->whereColumn('cl2.mobile', 'campaign_leads.mobile')
+                    ->where(function($q) {
+                        $q->whereColumn('cl2.mobile', 'campaign_leads.mobile')
+                          ->orWhereColumn('cl2.mobile', 'campaign_leads.mobile_1')
+                          ->orWhereColumn('cl2.mobile', 'campaign_leads.mobile_2');
+                    })
                     ->whereNotNull('cl2.mobile')
                     ->where('cl2.mobile', '!=', '')
                     ->orderBy('cl2.id', 'asc')
@@ -34,13 +38,17 @@ class CampaignLeadController extends Controller
             ])
             ->addSelect([
                 'crm_record_id' => DB::table('leads')->select('record_id')
-                    ->whereColumn('leads.mobile', 'campaign_leads.mobile')
+                    ->where(function($q) {
+                        $q->whereColumn('leads.mobile', 'campaign_leads.mobile')
+                          ->orWhereColumn('leads.mobile', 'campaign_leads.mobile_1')
+                          ->orWhereColumn('leads.mobile', 'campaign_leads.mobile_2');
+                    })
                     ->whereNotNull('leads.mobile')
                     ->where('leads.mobile', '!=', '')
                     ->orderBy('id', 'asc')
                     ->limit(1)
             ])
-            ->latest();
+            ->orderBy('id', 'desc');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -60,7 +68,29 @@ class CampaignLeadController extends Controller
             $query->where('rate', $request->rate);
         }
 
-        $leads = $query->paginate(50)->withQueryString();
+        if ($request->filled('duplicate')) {
+            if ($request->duplicate === 'converted') {
+                $query->where(function($q) {
+                    $q->whereIn('campaign_leads.mobile', function($sub) {
+                        $sub->select('mobile')->from('leads')->whereNotNull('mobile')->where('mobile', '!=', '');
+                    })->orWhereIn('campaign_leads.mobile_1', function($sub) {
+                        $sub->select('mobile')->from('leads')->whereNotNull('mobile')->where('mobile', '!=', '');
+                    })->orWhereIn('campaign_leads.mobile_2', function($sub) {
+                        $sub->select('mobile')->from('leads')->whereNotNull('mobile')->where('mobile', '!=', '');
+                    });
+                });
+            } elseif ($request->duplicate === 'not_converted') {
+                $query->whereNotIn('campaign_leads.mobile', function($sub) {
+                    $sub->select('mobile')->from('leads')->whereNotNull('mobile')->where('mobile', '!=', '');
+                })->whereNotIn('campaign_leads.mobile_1', function($sub) {
+                    $sub->select('mobile')->from('leads')->whereNotNull('mobile')->where('mobile', '!=', '');
+                })->whereNotIn('campaign_leads.mobile_2', function($sub) {
+                    $sub->select('mobile')->from('leads')->whereNotNull('mobile')->where('mobile', '!=', '');
+                });
+            }
+        }
+
+        $leads = $query->paginate(100)->withQueryString();
 
         // Check for duplicates with Client (Customer/Lead)
         foreach ($leads as $lead) {
@@ -177,6 +207,82 @@ class CampaignLeadController extends Controller
         return back()->with('success', count($ids) . ' leads deleted successfully.');
     }
 
+    public function deleteAll(Request $request)
+    {
+        abort_if(!auth()->user()->can('campaign-delete'), 403);
+
+        $query = CampaignLead::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('customer_name', 'like', "%{$search}%")
+                    ->orWhere('mobile', 'like', "%{$search}%")
+                    ->orWhere('mobile_1', 'like', "%{$search}%")
+                    ->orWhere('mobile_2', 'like', "%{$search}%")
+                    ->orWhere('email_id', 'like', "%{$search}%")
+                    ->orWhere('email_id_1', 'like', "%{$search}%")
+                    ->orWhere('company_name', 'like', "%{$search}%")
+                    ->orWhere('place', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('rate')) {
+            $query->where('rate', $request->rate);
+        }
+
+        if ($request->filled('duplicate')) {
+            if ($request->duplicate === 'converted') {
+                $query->where(function($q) {
+                    $q->whereExists(function($sub) {
+                        $sub->select(DB::raw(1))
+                            ->from('leads')
+                            ->whereColumn('leads.mobile', 'campaign_leads.mobile')
+                            ->whereNotNull('leads.mobile')
+                            ->where('leads.mobile', '!=', '');
+                    })->orWhereExists(function($sub) {
+                        $sub->select(DB::raw(1))
+                            ->from('leads')
+                            ->whereColumn('leads.mobile', 'campaign_leads.mobile_1')
+                            ->whereNotNull('leads.mobile')
+                            ->where('leads.mobile', '!=', '');
+                    })->orWhereExists(function($sub) {
+                        $sub->select(DB::raw(1))
+                            ->from('leads')
+                            ->whereColumn('leads.mobile', 'campaign_leads.mobile_2')
+                            ->whereNotNull('leads.mobile')
+                            ->where('leads.mobile', '!=', '');
+                    });
+                });
+            } elseif ($request->duplicate === 'not_converted') {
+                $query->whereNotExists(function($sub) {
+                    $sub->select(DB::raw(1))
+                        ->from('leads')
+                        ->where(function($q) {
+                            $q->whereColumn('leads.mobile', 'campaign_leads.mobile')
+                              ->orWhereColumn('leads.mobile', 'campaign_leads.mobile_1')
+                              ->orWhereColumn('leads.mobile', 'campaign_leads.mobile_2');
+                        })
+                        ->whereNotNull('leads.mobile')
+                        ->where('leads.mobile', '!=', '');
+                });
+            }
+        }
+
+        $count = $query->count();
+        if ($count === 0) {
+            return redirect()->route('campaign-leads.index')->with('info', 'No campaign leads found to delete.');
+        }
+
+        $query->delete();
+
+        $message = $request->hasAny(['search', 'rate', 'duplicate'])
+            ? "All {$count} filtered campaign leads have been deleted successfully."
+            : "All {$count} campaign leads have been deleted successfully.";
+
+        return redirect()->route('campaign-leads.index')->with('success', $message);
+    }
+
     public function export(Request $request)
     {
         abort_if(!auth()->user()->can('campaign-export'), 403);
@@ -262,6 +368,11 @@ class CampaignLeadController extends Controller
                 return back()->with('error', 'The CSV file is empty.');
             }
 
+            // Convert headers to UTF-8 to handle any Windows-1252 / ISO-8859-1 header chars
+            $headers = array_map(function($header) {
+                return mb_convert_encoding($header, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+            }, $headers);
+
             // Simple mapping logic
             $headerMap = [
                 'name' => 'customer_name',
@@ -289,6 +400,12 @@ class CampaignLeadController extends Controller
 
             $imported = 0;
             while (($data = fgetcsv($handle, 1000, ',')) !== false) {
+                // Convert values to UTF-8 to avoid SQLSTATE 22007 encoding errors
+                $data = array_map(function($val) {
+                    if ($val === null) return null;
+                    return mb_convert_encoding($val, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+                }, $data);
+
                 $row = [];
                 foreach ($headers as $index => $label) {
                     $cleanLabel = strtolower(str_replace([' ', '_'], ['_', '_'], trim($label)));
@@ -477,6 +594,44 @@ class CampaignLeadController extends Controller
             $query->where('rate', $request->rate);
         }
 
+        if ($request->filled('duplicate')) {
+            if ($request->duplicate === 'converted') {
+                $query->where(function($q) {
+                    $q->whereExists(function($sub) {
+                        $sub->select(DB::raw(1))
+                            ->from('leads')
+                            ->whereColumn('leads.mobile', 'campaign_leads.mobile')
+                            ->whereNotNull('leads.mobile')
+                            ->where('leads.mobile', '!=', '');
+                    })->orWhereExists(function($sub) {
+                        $sub->select(DB::raw(1))
+                            ->from('leads')
+                            ->whereColumn('leads.mobile', 'campaign_leads.mobile_1')
+                            ->whereNotNull('leads.mobile')
+                            ->where('leads.mobile', '!=', '');
+                    })->orWhereExists(function($sub) {
+                        $sub->select(DB::raw(1))
+                            ->from('leads')
+                            ->whereColumn('leads.mobile', 'campaign_leads.mobile_2')
+                            ->whereNotNull('leads.mobile')
+                            ->where('leads.mobile', '!=', '');
+                    });
+                });
+            } elseif ($request->duplicate === 'not_converted') {
+                $query->whereNotExists(function($sub) {
+                    $sub->select(DB::raw(1))
+                        ->from('leads')
+                        ->where(function($q) {
+                            $q->whereColumn('leads.mobile', 'campaign_leads.mobile')
+                              ->orWhereColumn('leads.mobile', 'campaign_leads.mobile_1')
+                              ->orWhereColumn('leads.mobile', 'campaign_leads.mobile_2');
+                        })
+                        ->whereNotNull('leads.mobile')
+                        ->where('leads.mobile', '!=', '');
+                });
+            }
+        }
+
         $leads = $query->get();
 
         return response()->json([
@@ -525,6 +680,43 @@ class CampaignLeadController extends Controller
                 }
                 if ($request->filled('rate')) {
                     $query->where('rate', $request->rate);
+                }
+                if ($request->filled('duplicate')) {
+                    if ($request->duplicate === 'converted') {
+                        $query->where(function($q) {
+                            $q->whereExists(function($sub) {
+                                $sub->select(DB::raw(1))
+                                    ->from('leads')
+                                    ->whereColumn('leads.mobile', 'campaign_leads.mobile')
+                                    ->whereNotNull('leads.mobile')
+                                    ->where('leads.mobile', '!=', '');
+                            })->orWhereExists(function($sub) {
+                                $sub->select(DB::raw(1))
+                                    ->from('leads')
+                                    ->whereColumn('leads.mobile', 'campaign_leads.mobile_1')
+                                    ->whereNotNull('leads.mobile')
+                                    ->where('leads.mobile', '!=', '');
+                            })->orWhereExists(function($sub) {
+                                $sub->select(DB::raw(1))
+                                    ->from('leads')
+                                    ->whereColumn('leads.mobile', 'campaign_leads.mobile_2')
+                                    ->whereNotNull('leads.mobile')
+                                    ->where('leads.mobile', '!=', '');
+                            });
+                        });
+                    } elseif ($request->duplicate === 'not_converted') {
+                        $query->whereNotExists(function($sub) {
+                            $sub->select(DB::raw(1))
+                                ->from('leads')
+                                ->where(function($q) {
+                                    $q->whereColumn('leads.mobile', 'campaign_leads.mobile')
+                                      ->orWhereColumn('leads.mobile', 'campaign_leads.mobile_1')
+                                      ->orWhereColumn('leads.mobile', 'campaign_leads.mobile_2');
+                                })
+                                ->whereNotNull('leads.mobile')
+                                ->where('leads.mobile', '!=', '');
+                        });
+                    }
                 }
             } else {
                 $ids = explode(',', $request->ids);

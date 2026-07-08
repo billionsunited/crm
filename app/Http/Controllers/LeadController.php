@@ -640,6 +640,11 @@ class LeadController extends Controller
                 return back()->with('error', 'The CSV file is completely empty.');
             }
 
+            // Convert headers to UTF-8 to handle any Windows-1252 / ISO-8859-1 header chars
+            $headers = array_map(function($header) {
+                return mb_convert_encoding($header, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+            }, $headers);
+
             // Normalize headers for mapping
             $headers = array_map(function ($val) {
                 $val = trim((string) preg_replace('/[\x00-\x1F\x80-\xFF]/', '', (string) $val));
@@ -663,6 +668,12 @@ class LeadController extends Controller
                 if (empty($data) || (count($data) === 1 && $data[0] === null)) {
                     continue;
                 }
+
+                // Convert values to UTF-8 to avoid SQLSTATE 22007 encoding errors
+                $data = array_map(function($val) {
+                    if ($val === null) return null;
+                    return mb_convert_encoding($val, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+                }, $data);
 
                 $row = [];
                 foreach ($headers as $index => $header) {

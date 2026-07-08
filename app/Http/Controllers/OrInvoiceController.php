@@ -203,28 +203,31 @@ class OrInvoiceController extends Controller
             Lead::SOURCE_GROUPS['CRM']
         );
 
-        $leads = Customer::whereHas('leads', function ($q) use ($targetSources) {
-            $q->whereIn('creation_source', $targetSources);
-        })->with(['leads' => function ($q) use ($targetSources) {
-            $q->whereIn('creation_source', $targetSources)->latest();
-        }])->orderBy('company_name')->get()->map(function ($customer) {
-            $lead = $customer->leads->first();
-            return [
-                'id' => $lead->id,
-                'record_id' => $lead->record_id,
-                'client_name' => $customer->client_name ?? 'None',
-                'organisation_name' => $customer->company_name ?? 'None',
-                'address' => $customer->registered_address ?? 'None',
-                'city' => $customer->place ?? 'None',
-                'state' => $customer->state_name ?? $lead->state ?? 'Karnataka',
-                'state_code' => $customer->state_code ?? $lead->state_code ?? '29',
-                'udyam_certificate' => $lead->udyam_registration_certificate ?? 'None',
-                'pan_no' => $lead->pan_number ?? 'None',
-                'aadhar_no' => $lead->aadhar_no ?? 'None',
-                'gstin_unique_id' => $lead->gst_no ?? 'None',
-                'reference' => $lead->reference ?? 'None',
-            ];
-        });
+        $leads = Lead::whereIn('creation_source', $targetSources)
+            ->whereNotNull('customer_id')
+            ->leftJoin('customers', 'leads.customer_id', '=', 'customers.id')
+            ->select('leads.*')
+            ->orderByRaw('COALESCE(customers.company_name, leads.company_name) ASC')
+            ->with('customer')
+            ->get()
+            ->map(function ($lead) {
+                $customer = $lead->customer;
+                return [
+                    'id' => $lead->id,
+                    'record_id' => $lead->record_id,
+                    'client_name' => $customer?->client_name ?? $lead->customer_name ?? 'None',
+                    'organisation_name' => $customer?->company_name ?? $lead->company_name ?? 'None',
+                    'address' => $customer?->registered_address ?? $lead->company_address ?? 'None',
+                    'city' => $customer?->place ?? $lead->city ?? 'None',
+                    'state' => $customer?->state_name ?? $lead->state ?? 'Karnataka',
+                    'state_code' => $customer?->state_code ?? $lead->state_code ?? '29',
+                    'udyam_certificate' => $lead->udyam_registration_certificate ?? 'None',
+                    'pan_no' => $lead->pan_number ?? 'None',
+                    'aadhar_no' => $lead->aadhar_no ?? 'None',
+                    'gstin_unique_id' => $lead->gst_no ?? 'None',
+                    'reference' => $lead->reference ?? 'None',
+                ];
+            });
         return view('or_invoices.create', compact('leads'));
     }
 
@@ -387,28 +390,31 @@ class OrInvoiceController extends Controller
             Lead::SOURCE_GROUPS['CRM']
         );
 
-        $leads = Customer::whereHas('leads', function ($q) use ($targetSources) {
-            $q->whereIn('creation_source', $targetSources);
-        })->with(['leads' => function ($q) use ($targetSources) {
-            $q->whereIn('creation_source', $targetSources)->latest();
-        }])->orderBy('company_name')->get()->map(function ($customer) {
-            $lead = $customer->leads->first();
-            return [
-                'id' => $lead->id,
-                'record_id' => $lead->record_id,
-                'client_name' => $customer->client_name ?? 'None',
-                'organisation_name' => $customer->company_name ?? 'None',
-                'address' => $customer->registered_address ?? 'None',
-                'city' => $customer->place ?? 'None',
-                'state' => $customer->state_name ?? $lead->state ?? 'Karnataka',
-                'state_code' => $customer->state_code ?? $lead->state_code ?? '29',
-                'udyam_certificate' => $lead->udyam_registration_certificate ?? 'None',
-                'pan_no' => $lead->pan_number ?? 'None',
-                'aadhar_no' => $lead->aadhar_no ?? 'None',
-                'gstin_unique_id' => $lead->gst_no ?? 'None',
-                'reference' => $lead->reference ?? 'None',
-            ];
-        });
+        $leads = Lead::whereIn('creation_source', $targetSources)
+            ->whereNotNull('customer_id')
+            ->leftJoin('customers', 'leads.customer_id', '=', 'customers.id')
+            ->select('leads.*')
+            ->orderByRaw('COALESCE(customers.company_name, leads.company_name) ASC')
+            ->with('customer')
+            ->get()
+            ->map(function ($lead) {
+                $customer = $lead->customer;
+                return [
+                    'id' => $lead->id,
+                    'record_id' => $lead->record_id,
+                    'client_name' => $customer?->client_name ?? $lead->customer_name ?? 'None',
+                    'organisation_name' => $customer?->company_name ?? $lead->company_name ?? 'None',
+                    'address' => $customer?->registered_address ?? $lead->company_address ?? 'None',
+                    'city' => $customer?->place ?? $lead->city ?? 'None',
+                    'state' => $customer?->state_name ?? $lead->state ?? 'Karnataka',
+                    'state_code' => $customer?->state_code ?? $lead->state_code ?? '29',
+                    'udyam_certificate' => $lead->udyam_registration_certificate ?? 'None',
+                    'pan_no' => $lead->pan_number ?? 'None',
+                    'aadhar_no' => $lead->aadhar_no ?? 'None',
+                    'gstin_unique_id' => $lead->gst_no ?? 'None',
+                    'reference' => $lead->reference ?? 'None',
+                ];
+            });
         return view('or_invoices.edit', compact('invoice', 'leads'));
     }
 
