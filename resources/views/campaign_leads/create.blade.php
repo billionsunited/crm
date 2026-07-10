@@ -3,7 +3,16 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto">
-    <div class="flex items-center justify-between mb-8">
+    <style>
+        @media (max-width: 639px) {
+            .campaign-header-mobile {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 1rem !important;
+            }
+        }
+    </style>
+    <div class="flex items-center justify-between mb-8 campaign-header-mobile">
         <div>
             <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Add New Campaign Lead</h1>
             <p class="text-slate-500 mt-1">Fill in the details to add a new lead for campaigns.</p>

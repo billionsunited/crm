@@ -677,8 +677,18 @@ class ManagePoController extends Controller
 
       $po_date = $request->input('po_date');
       $email_id = $request->input('email_id');
+      
       $data_category = $request->input('data_category', []);
+      if (in_array('Other', $data_category)) {
+          $data_category = array_diff($data_category, ['Other']);
+          $data_category[] = $request->input('data_category_other_text') ?: 'Other';
+      }
+
       $geography_filter = $request->input('geography_filter', []);
+      if (in_array('Other', $geography_filter)) {
+          $geography_filter = array_diff($geography_filter, ['Other']);
+          $geography_filter[] = $request->input('geography_filter_other_text') ?: 'Other';
+      }
       $volume_records = $request->input('volume_records');
       $excluded_amount = $request->input('excluded_amount');
 

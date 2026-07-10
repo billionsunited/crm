@@ -29,6 +29,11 @@
             padding-right: 0.375rem !important;
             gap: 0px !important;
         }
+
+        .notification-dropdown-mobile {
+            width: 300px !important;
+            right: -60px !important;
+        }
     }
 </style>
 
@@ -102,7 +107,7 @@
                 x-transition:leave="transition ease-in duration-75"
                 x-transition:leave-start="transform opacity-100 scale-100"
                 x-transition:leave-end="transform opacity-0 scale-95"
-                class="absolute right-0 mt-3 bg-white rounded-xl shadow-xl border border-slate-100 py-2 ring-1 ring-black ring-opacity-5 origin-top-right z-[100] flex flex-col"
+                class="absolute right-0 mt-3 bg-white rounded-xl shadow-xl border border-slate-100 py-2 ring-1 ring-black ring-opacity-5 origin-top-right z-[100] flex flex-col notification-dropdown-mobile"
                 style="display: none; width: 350px;">
 
                 <div class="px-4 py-2 border-b border-slate-100 flex justify-between items-center">

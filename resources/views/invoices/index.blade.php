@@ -9,7 +9,7 @@
             </div>
 
             <!-- Actions -->
-            <div class="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-3">
+            <div class="flex flex-wrap sm:flex-nowrap justify-start sm:justify-end gap-3">
                 @can('invoice-export')
                 <button type="button" @click="exportModalOpen = true" class="btn bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors shadow-sm cursor-pointer">
                     <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">

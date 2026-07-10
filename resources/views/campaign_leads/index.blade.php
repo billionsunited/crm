@@ -51,24 +51,6 @@
                 gap: 0.75rem !important;
             }
 
-            .campaign-actions-row {
-                display: grid !important;
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 0.75rem !important;
-                width: 100% !important;
-            }
-
-            .campaign-actions-row button,
-            .campaign-actions-row form,
-            .campaign-actions-row .relative {
-                grid-column: span 1 / span 1 !important;
-                width: 100% !important;
-            }
-
-            .campaign-actions-row a {
-                grid-column: span 2 / span 2 !important;
-                width: 100% !important;
-            }
 
             .campaign-bulk-bar {
                 width: 100% !important;
@@ -136,71 +118,83 @@
                 </div>
 
                 <div class="campaign-header-right w-full sm:w-auto">
-                    <div class="campaign-actions-row w-full sm:w-auto">
-                    @can('campaign-import')
-                    <button type="button" @click="importModalOpen = true"
-                        class="inline-flex items-center justify-center gap-2 px-4 h-12 border border-slate-300 rounded-lg shadow-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors whitespace-nowrap">
-                        <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        Import
-                    </button>
-                    @endcan
- 
-                    @can('campaign-export')
-                    <div x-data="{ open: false }" class="relative">
-                        <button @click="open = !open" @click.away="open = false" type="button"
-                            class="inline-flex items-center justify-center gap-2 px-4 h-12 border border-slate-300 rounded-lg shadow-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors whitespace-nowrap w-full">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    <div class="campaign-actions-row w-full sm:w-auto flex items-center gap-2">
+                    <div x-data="{ actionsOpen: false }" class="relative inline-block text-left">
+                        <button @click="actionsOpen = !actionsOpen" @click.away="actionsOpen = false" type="button"
+                            class="inline-flex items-center justify-center gap-2 px-4 h-10 border border-slate-300 rounded-lg shadow-sm font-semibold text-sm text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all whitespace-nowrap">
+                            Actions
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
-                            Export
                         </button>
-                        <div x-show="open"
-                            class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-[100]"
-                            style="display: none;">
+                        <div x-show="actionsOpen"
+                            class="absolute left-0 sm:left-auto sm:right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-[100]"
+                            style="display: none;"
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95">
                             <div class="py-1">
+                                @can('campaign-import')
+                                <button type="button" @click="importModalOpen = true; actionsOpen = false;"
+                                    class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors">
+                                    <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                    Import Leads
+                                </button>
+                                @endcan
+
+                                @can('campaign-export')
                                 <a href="{{ route('campaign-leads.export') }}"
-                                    class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors">Export
-                                    All Leads</a>
+                                    class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors">
+                                    <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Export All Leads
+                                </a>
                                 <a href="{{ route('campaign-leads.export', ['type' => 'filtered'] + request()->all()) }}"
-                                    class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors">Export
-                                    Filtered Results</a>
+                                    class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition-colors">
+                                    <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Export Filtered
+                                </a>
+                                @endcan
+
+                                @can('campaign-delete')
+                                <div class="border-t border-slate-100 my-1"></div>
+                                <form action="{{ route('campaign-leads.delete-all') }}" method="POST"
+                                    onsubmit="return confirm('{{ request()->anyFilled(['search', 'rate', 'duplicate']) ? 'WARNING: This will permanently delete ALL campaign leads matching the active filters. This action cannot be undone. Are you sure you want to proceed?' : 'WARNING: This will permanently delete ALL campaign leads. This action cannot be undone. Are you sure you want to proceed?' }}') && confirm('Please confirm once more: Do you really want to delete them?')">
+                                    @csrf
+                                    @if(request()->filled('search'))
+                                        <input type="hidden" name="search" value="{{ request('search') }}">
+                                    @endif
+                                    @if(request()->filled('rate'))
+                                        <input type="hidden" name="rate" value="{{ request('rate') }}">
+                                    @endif
+                                    @if(request()->filled('duplicate'))
+                                        <input type="hidden" name="duplicate" value="{{ request('duplicate') }}">
+                                    @endif
+                                    <button type="submit"
+                                        class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm font-medium text-rose-600 hover:bg-slate-100 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        Delete All {{ request()->anyFilled(['search', 'rate', 'duplicate']) ? 'Filtered' : '' }}
+                                    </button>
+                                </form>
+                                @endcan
                             </div>
                         </div>
                     </div>
-                    @endcan
- 
-                    @can('campaign-delete')
-                    <form action="{{ route('campaign-leads.delete-all') }}" method="POST" class="w-full sm:w-auto"
-                        onsubmit="return confirm('{{ request()->hasAny(['search', 'rate', 'duplicate']) ? 'WARNING: This will permanently delete ALL campaign leads matching the active filters. This action cannot be undone. Are you sure you want to proceed?' : 'WARNING: This will permanently delete ALL campaign leads. This action cannot be undone. Are you sure you want to proceed?' }}') && confirm('Please confirm once more: Do you really want to delete them?')">
-                        @csrf
-                        @if(request()->filled('search'))
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                        @endif
-                        @if(request()->filled('rate'))
-                            <input type="hidden" name="rate" value="{{ request('rate') }}">
-                        @endif
-                        @if(request()->filled('duplicate'))
-                            <input type="hidden" name="duplicate" value="{{ request('duplicate') }}">
-                        @endif
-                        <button type="submit"
-                            class="inline-flex items-center justify-center gap-2 px-4 h-12 border border-transparent rounded-lg shadow-sm font-bold text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 transition-all whitespace-nowrap w-full">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                            Delete All {{ request()->hasAny(['search', 'rate', 'duplicate']) ? 'Filtered' : '' }}
-                        </button>
-                    </form>
-                    @endcan
-
+                    
                     @can('campaign-add')
                     <a href="{{ route('campaign-leads.create') }}"
-                        class="inline-flex items-center justify-center gap-2 px-6 h-12 border border-transparent rounded-lg shadow-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all whitespace-nowrap add-lead-btn">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="inline-flex items-center justify-center gap-2 px-4 h-10 border border-transparent rounded-lg shadow-sm font-semibold text-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all whitespace-nowrap add-lead-btn">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
@@ -241,7 +235,7 @@
                                 campaignRoute: '{{ route('campaign-leads.send-campaign') }}',
                                 allContactsRoute: '{{ route('campaign-leads.all-contacts') }}',
                                 filteredContactsRoute: '{{ route('campaign-leads.filtered-contacts') }}',
-                                isFilteredCampaign: {{ request()->hasAny(['search', 'rate', 'duplicate']) ? 'true' : 'false' }},
+                                isFilteredCampaign: {{ request()->anyFilled(['search', 'rate', 'duplicate']) ? 'true' : 'false' }},
                                 filters: {
                                     search: '{{ addslashes(request('search')) }}',
                                     rate: '{{ addslashes(request('rate')) }}',
@@ -263,7 +257,7 @@
                             <button type="button" @click="$dispatch('open-email-modal', { 
                                 bulkIds: selectedIds,
                                 emailCampaignRoute: '{{ route('campaign-leads.send_email_campaign') }}',
-                                isFilteredCampaign: {{ request()->hasAny(['search', 'rate', 'duplicate']) ? 'true' : 'false' }},
+                                isFilteredCampaign: {{ request()->anyFilled(['search', 'rate', 'duplicate']) ? 'true' : 'false' }},
                                 filters: {
                                     search: '{{ addslashes(request('search')) }}',
                                     rate: '{{ addslashes(request('rate')) }}',
@@ -623,7 +617,7 @@
                                                                 campaignRoute: '{{ route('campaign-leads.send-campaign') }}',
                                                                 allContactsRoute: '{{ route('campaign-leads.all-contacts') }}',
                                                                 filteredContactsRoute: '{{ route('campaign-leads.filtered-contacts') }}',
-                                                                isFilteredCampaign: {{ request()->hasAny(['search', 'rate']) ? 'true' : 'false' }},
+                                                                isFilteredCampaign: {{ request()->anyFilled(['search', 'rate']) ? 'true' : 'false' }},
                                                                 filters: {
                                                                     search: '{{ addslashes(request('search')) }}',
                                                                     rate: '{{ addslashes(request('rate')) }}'
@@ -637,8 +631,7 @@
                                                         @can('email-template-send')
                                                         <button type="button" @click="$dispatch('open-email-modal', { 
                                                                 bulkIds: ['{{ $lead->id }}'],
-                                                                emailCampaignRoute: '{{ route('campaign-leads.send_email_campaign') }}',
-                                                                isFilteredCampaign: {{ request()->hasAny(['search', 'rate']) ? 'true' : 'false' }},
+                                                                isFilteredCampaign: {{ request()->anyFilled(['search', 'rate', 'duplicate']) ? 'true' : 'false' }},
                                                                 filters: {
                                                                     search: '{{ addslashes(request('search')) }}',
                                                                     rate: '{{ addslashes(request('rate')) }}'
